@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#020208">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MyDream — Lucid Dream System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020208;--glass:rgba(0,20,55,.45);--gb:rgba(0,245,255,.14);--c1:#00f5ff;--c2:#9d00ff;--c3:#ff006e;--c4:#ffd700;--c5:#00ff88;--c6:#0066ff;--tp:#cce8ff;--ts:rgba(200,230,255,.68);--tm:rgba(200,230,255,.38);--r:16px;--tr:all .3s cubic-bezier(.4,0,.2,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Rajdhani,sans-serif;background:var(--bg);color:var(--tp);min-height:100vh;overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(0,245,255,.2);border-radius:3px}
+.cur{position:fixed;width:10px;height:10px;background:var(--c1);border-radius:50%;pointer-events:none;z-index:99999;box-shadow:0 0 14px var(--c1);mix-blend-mode:screen;transform:translate(-50%,-50%)}
+.curf{position:fixed;width:34px;height:34px;border:1.5px solid rgba(0,245,255,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .15s}
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;animation:orbF 24s ease-in-out infinite}
+.o1{width:700px;height:700px;background:radial-gradient(circle,rgba(157,0,255,.12),transparent);top:-300px;left:-300px}
+.o2{width:550px;height:550px;background:radial-gradient(circle,rgba(0,245,255,.09),transparent);bottom:-200px;right:-200px;animation-delay:-12s}
+.o3{width:450px;height:450px;background:radial-gradient(circle,rgba(255,0,110,.07),transparent);top:40%;left:50%;transform:translate(-50%,-50%);animation-delay:-7s}
+@keyframes orbF{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.05)}66%{transform:translate(-20px,20px) scale(.95)}}
+#ls{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity .6s}
+#ls.hide{opacity:0;pointer-events:none}
+.ls-logo{font-family:Orbitron,monospace;font-size:2.4rem;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ls-sub{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--tm);letter-spacing:4px}
+.ls-bar{width:220px;height:2px;background:rgba(0,245,255,.1);border-radius:2px;overflow:hidden}
+.ls-fill{height:100%;background:linear-gradient(90deg,var(--c1),var(--c2));width:0;transition:width 2.2s cubic-bezier(.4,0,.2,1)}
+.ls-st{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--tm);letter-spacing:2px}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:58px;background:rgba(2,2,8,.92);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,245,255,.08)}
+.nlogo{display:flex;align-items:center;gap:8px;cursor:pointer}
+.nli{width:32px;height:32px;background:linear-gradient(135deg,var(--c1),var(--c2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;animation:lG 3s ease-in-out infinite}
+@keyframes lG{0%,100%{box-shadow:0 0 18px rgba(0,245,255,.4)}50%{box-shadow:0 0 32px rgba(157,0,255,.6)}}
+.nlt{font-family:Orbitron,monospace;font-size:1.1rem;font-weight:700;letter-spacing:3px;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c1));background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:sh 4s linear infinite}
+@keyframes sh{0%{background-position:0%}100%{background-position:200%}}
+.ntabs{display:flex;gap:2px;background:rgba(0,245,255,.04);border-radius:12px;padding:4px;border:1px solid rgba(0,245,255,.08)}
+.ntab{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:Rajdhani,sans-serif;font-size:.74rem;font-weight:600;color:var(--tm);white-space:nowrap;background:transparent;border:none;transition:var(--tr)}
+.ntab:hover{color:var(--c1);background:rgba(0,245,255,.07)}
+.ntab.active{color:#000;background:linear-gradient(135deg,var(--c1),rgba(0,200,220,.8));box-shadow:0 0 14px rgba(0,245,255,.4)}
+.nacts{display:flex;gap:6px;align-items:center}
+.ndw{display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--tm);padding:5px 9px;border-radius:20px;background:rgba(0,245,255,.04);border:1px solid rgba(0,245,255,.08)}
+.ndot{width:6px;height:6px;border-radius:50%;background:#333}
+.ndot.on{background:var(--c5);box-shadow:0 0 8px var(--c5);animation:bl 2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.4}}
+.nbtn{width:33px;height:33px;border-radius:9px;border:1px solid rgba(0,245,255,.14);background:rgba(0,245,255,.04);color:var(--c1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:var(--tr)}
+.nbtn:hover{background:rgba(0,245,255,.12)}
+.page{display:none;padding:70px 18px 24px;min-height:100vh;animation:pi .35s ease;position:relative;z-index:1}
+.page.active{display:block}
+@keyframes pi{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+#pp{padding:58px 0 0}
+.gc{background:var(--glass);backdrop-filter:blur(22px);border:1px solid var(--gb);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:var(--tr)}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,245,255,.5),transparent)}
+.gcp::before{background:linear-gradient(90deg,transparent,rgba(157,0,255,.6),transparent)}
+.gcg::before{background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent)}
+.gcr::before{background:linear-gradient(90deg,transparent,rgba(255,0,110,.5),transparent)}
+.st{font-family:Orbitron,monospace;font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--c1);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.st::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,245,255,.3),transparent)}
+.gr{display:grid;gap:13px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr}.ntabs{display:none}.mbn{display:block!important}.page{padding-bottom:68px}}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-family:Rajdhani,sans-serif;font-size:.86rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none}
+.bp{background:linear-gradient(135deg,var(--c1),rgba(0,180,200,.8));color:#000;box-shadow:0 0 16px rgba(0,245,255,.25)}
+.bp:hover{box-shadow:0 0 36px rgba(0,245,255,.55);transform:translateY(-2px)}
+.bs{background:rgba(157,0,255,.12);color:var(--c2);border:1px solid rgba(157,0,255,.28)}
+.bs:hover{background:rgba(157,0,255,.22)}
+.bg2{background:rgba(255,255,255,.04);color:var(--tp);border:1px solid rgba(255,255,255,.09)}
+.bg2:hover{background:rgba(255,255,255,.09)}
+.bd{background:rgba(255,0,110,.11);color:var(--c3);border:1px solid rgba(255,0,110,.24)}
+.bi{width:38px;height:38px;padding:0;justify-content:center;font-size:.9rem}
+.fg{margin-bottom:13px}
+label{display:block;font-size:.72rem;font-weight:600;color:var(--ts);margin-bottom:4px;letter-spacing:.5px;text-transform:uppercase}
+input,textarea,select{background:rgba(0,10,35,.65);border:1px solid rgba(0,245,255,.12);border-radius:10px;color:var(--tp);font-family:Rajdhani,sans-serif;font-size:.88rem;padding:9px 13px;width:100%;outline:none;transition:var(--tr)}
+input:focus,textarea:focus,select:focus{border-color:rgba(0,245,255,.45)}
+select option{background:#080820}
+textarea{resize:vertical;min-height:88px}
+input[type=range]{-webkit-appearance:none;height:4px;border-radius:4px;background:rgba(0,245,255,.15);border:none;padding:0;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--c1);cursor:pointer}
+input[type=color]{padding:2px;cursor:pointer;height:38px}
+.rv{font-family:'Share Tech Mono',monospace;font-size:.73rem;color:var(--c1);text-align:right;margin-top:3px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.trow:last-child{border-bottom:none}
+.ti{flex:1}.tl{font-size:.86rem;font-weight:600;color:var(--tp)}.td{font-size:.73rem;color:var(--tm);margin-top:1px}
+.tg{position:relative;width:44px;height:24px;flex-shrink:0;cursor:pointer}
+.tg input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.2);border-radius:24px;transition:var(--tr)}
+.sl::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:var(--tm);border-radius:50%;transition:var(--tr)}
+.tg input:checked+.sl{background:rgba(0,245,255,.18);border-color:var(--c1)}
+.tg input:checked+.sl::before{transform:translateX(20px);background:var(--c1);box-shadow:0 0 8px var(--c1)}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:600;font-family:'Share Tech Mono',monospace}
+.bc{background:rgba(0,245,255,.1);color:var(--c1);border:1px solid rgba(0,245,255,.2)}
+.bp2{background:rgba(157,0,255,.1);color:var(--c2);border:1px solid rgba(157,0,255,.2)}
+.bpk{background:rgba(255,0,110,.1);color:var(--c3);border:1px solid rgba(255,0,110,.2)}
+.bg3{background:rgba(255,215,0,.1);color:var(--c4);border:1px solid rgba(255,215,0,.2)}
+.bgn{background:rgba(0,255,136,.1);color:var(--c5);border:1px solid rgba(0,255,136,.2)}
+.sc{text-align:center;padding:16px 12px}
+.sv{font-family:Orbitron,monospace;font-size:2.1rem;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:3px;line-height:1}
+.sl2{font-size:.74rem;color:var(--tm);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.mo{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:14px}
+.mo.show{display:flex}
+.md{background:rgba(5,5,20,.96);backdrop-filter:blur(30px);border:1px solid rgba(0,245,255,.15);border-radius:20px;padding:24px;max-width:520px;width:100%;animation:mi .3s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto}
+@keyframes mi{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mtt{font-family:Orbitron,monospace;font-size:.9rem;font-weight:700;color:var(--tp)}
+.mcc{cursor:pointer;color:var(--tm);font-size:1rem;padding:3px}
+.mcc:hover{color:var(--c3)}
+.tc2{position:fixed;top:68px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;min-width:230px;background:rgba(2,5,20,.94);backdrop-filter:blur(22px);border:1px solid rgba(0,245,255,.2);animation:ti .3s ease;pointer-events:all}
+.toast.out{animation:to .3s ease forwards}
+@keyframes ti{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes to{from{opacity:1}to{opacity:0;transform:translateX(18px)}}
+.mbn{display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:rgba(2,2,8,.96);backdrop-filter:blur(22px);border-top:1px solid rgba(0,245,255,.08);padding:6px 8px 8px}
+.mni{display:flex;justify-content:space-around}
+.mt2{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 9px;border-radius:9px;cursor:pointer;color:var(--tm);font-size:.56rem;font-family:'Share Tech Mono',monospace;border:none;background:transparent;transition:var(--tr)}
+.mt2.active{color:var(--c1)}.mti{font-size:1.1rem}
+.pw{position:relative;height:calc(100vh - 58px);overflow:hidden}
+#pc{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column}
+.ht{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px}
+.hsb{pointer-events:all}
+.hl{font-family:'Share Tech Mono',monospace;font-size:.56rem;letter-spacing:4px;color:rgba(0,245,255,.5);text-transform:uppercase;margin-bottom:2px}
+.hs{font-family:Orbitron,monospace;font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hh{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:rgba(0,245,255,.55);margin-top:2px}
+.hstats{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.hst{font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--tm);padding:3px 8px;border-radius:14px;background:rgba(0,10,30,.65);border:1px solid rgba(255,255,255,.07)}
+.hst span{color:var(--c1)}
+.hcc{flex:1;display:flex;align-items:center;justify-content:center}
+.bring{position:relative;width:124px;height:124px;pointer-events:all;cursor:pointer}
+.brt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.4}
+.brph{font-size:.56rem;color:var(--tm);font-family:'Share Tech Mono',monospace;letter-spacing:2px}
+.brcn{font-family:Orbitron,monospace;font-size:1.4rem;font-weight:700;color:var(--c1)}
+.hbot{display:flex;justify-content:center;padding:0 20px 22px;pointer-events:all}
+.pctrl{display:flex;gap:8px;align-items:center;background:rgba(2,5,18,.72);backdrop-filter:blur(22px);border:1px solid rgba(0,245,255,.12);border-radius:50px;padding:9px 18px}
+.pdiv{width:1px;height:22px;background:rgba(255,255,255,.08)}
+.bwm{position:absolute;bottom:88px;left:18px}
+.jg{display:grid;grid-template-columns:360px 1fr;gap:13px}
+@media(max-width:900px){.jg{grid-template-columns:1fr}}
+.dl{max-height:calc(100vh - 175px);overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.dc{padding:13px;border-radius:12px;background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09);cursor:pointer;transition:var(--tr)}
+.dc:hover{border-color:rgba(0,245,255,.24)}
+.dc.sel{border-color:var(--c1);background:rgba(0,245,255,.06)}
+.dcd{font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--tm);margin-bottom:4px}
+.dct{font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:5px}
+.dcp{font-size:.78rem;color:var(--tm);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dcm{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.frow{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.egrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:7px 0}
+.eb{aspect-ratio:1;border-radius:9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:var(--tr)}
+.eb:hover,.eb.s{background:rgba(0,245,255,.1);border-color:var(--c1);transform:scale(1.1)}
+.cbar{display:flex;gap:4px;margin:7px 0}
+.cb{flex:1;padding:6px 3px;border-radius:7px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;font-size:.68rem;font-weight:600;color:var(--tm);text-align:center;font-family:'Share Tech Mono',monospace;transition:var(--tr)}
+.cb.s{color:#000}
+.cb[data-v="1"].s{background:#00ff88;border-color:#00ff88}
+.cb[data-v="2"].s{background:#00ccff;border-color:#00ccff}
+.cb[data-v="3"].s{background:#0066ff;border-color:#0066ff}
+.cb[data-v="4"].s{background:#9d00ff;border-color:#9d00ff}
+.cb[data-v="5"].s{background:#ff006e;border-color:#ff006e}
+.sgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:7px 0}
+.sb{aspect-ratio:1;border-radius:7px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--tr)}
+.sb:hover,.sb.s{border-color:rgba(157,0,255,.5);background:rgba(157,0,255,.1);transform:scale(1.08)}
+.abl{padding:13px;border-radius:11px;background:rgba(157,0,255,.07);border:1px solid rgba(157,0,255,.18);margin-top:13px}
+.abl h4{font-family:Orbitron,monospace;font-size:.64rem;color:var(--c2);margin-bottom:8px;letter-spacing:2px}
+.atxt{font-size:.83rem;color:var(--ts);line-height:1.7;white-space:pre-wrap}
+.de{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:11px;min-height:260px;color:var(--tm);text-align:center}
+.pcard{padding:13px 11px;border-radius:12px;cursor:pointer;text-align:center;background:rgba(0,10,30,.55);border:1px solid rgba(0,245,255,.09);transition:var(--tr)}
+.pcard:hover{border-color:rgba(0,245,255,.28)}.pcard.active{border-color:var(--c1);background:rgba(0,245,255,.07)}
+.mtr{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;background:rgba(0,10,30,.45);border:1px solid rgba(255,255,255,.06);margin-bottom:8px}
+.hzgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:600px){.hzgrid{grid-template-columns:repeat(2,1fr)}}
+.hzc{padding:13px 11px;border-radius:11px;text-align:center;cursor:pointer;background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09);transition:var(--tr)}
+.hzc:hover{border-color:rgba(0,245,255,.28)}.hzc.active{border-color:var(--c1);background:rgba(0,245,255,.07)}
+.tcard{padding:17px;border-radius:13px;cursor:pointer;transition:var(--tr);background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09)}
+.tcard:hover{border-color:rgba(0,245,255,.28);transform:translateY(-2px)}
+.rccd{padding:14px 11px;border-radius:11px;text-align:center;cursor:pointer;background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09);transition:var(--tr)}
+.rccd:hover{border-color:rgba(0,245,255,.28)}
+.wbb{display:flex;align-items:center;justify-content:center;gap:18px;padding:20px;border-radius:13px;background:linear-gradient(135deg,rgba(0,245,255,.05),rgba(157,0,255,.05));border:1px solid rgba(0,245,255,.12);flex-wrap:wrap}
+.wbd{font-family:Orbitron,monospace;font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;min-width:160px;text-align:center}
+.lw{position:relative;border-radius:17px;overflow:hidden;border:1px solid rgba(0,245,255,.12);margin-bottom:13px}
+#lc{width:100%;height:230px;display:block;cursor:pointer}
+.cpal{display:flex;gap:8px;flex-wrap:wrap}
+.cpi{width:38px;height:38px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:var(--tr)}
+.cpi:hover,.cpi.s{border-color:rgba(255,255,255,.7);transform:scale(1.12)}
+.srow{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;background:rgba(0,10,30,.4);border:1px solid rgba(255,255,255,.05);margin-bottom:7px;transition:var(--tr)}
+.srow:hover{background:rgba(0,20,50,.55)}
+.wb{padding:22px;border-radius:17px;margin-bottom:13px;background:linear-gradient(135deg,rgba(0,245,255,.06),rgba(157,0,255,.08),transparent);border:1px solid rgba(0,245,255,.13);position:relative;overflow:hidden}
+.spviz{display:flex;gap:3px;height:75px;align-items:flex-end;margin-top:11px}
+.spb{flex:1;border-radius:4px 4px 0 0;min-height:7px}
+.spb.rem{background:linear-gradient(0deg,var(--c2),rgba(157,0,255,.5))}.spb.light{background:linear-gradient(0deg,var(--c5),rgba(0,255,136,.5))}.spb.deep{background:linear-gradient(0deg,var(--c6),rgba(0,102,255,.5))}.spb.awake{background:linear-gradient(0deg,var(--c1),rgba(0,245,255,.5))}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:13px}
+@media(max-width:700px){.qa{grid-template-columns:repeat(2,1fr)}}
+.qac{padding:14px 11px;border-radius:12px;text-align:center;cursor:pointer;background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09);transition:var(--tr)}
+.qac:hover{border-color:rgba(0,245,255,.28);transform:translateY(-2px)}
+.pt{font-family:Orbitron,monospace;font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:3px}
+.psb{font-size:.84rem;color:var(--tm)}.phd{margin-bottom:18px}
+.insc{padding:13px;border-radius:11px;background:rgba(0,10,30,.45);border:1px solid rgba(0,245,255,.09);display:flex;align-items:flex-start;gap:11px;margin-bottom:8px}
+.alarm-c{display:flex;align-items:center;gap:13px;padding:13px;border-radius:11px;background:rgba(0,10,30,.5);border:1px solid rgba(0,245,255,.09);margin-bottom:8px}
+.alarm-t{font-family:Orbitron,monospace;font-size:1.3rem;font-weight:700;color:var(--c1);min-width:70px}
+.dw{display:flex;align-items:center;justify-content:center;padding:18px}
+</style>
+</head>
+<body>
+<div id="ls"><div class="ls-logo">✦ MyDream</div><div class="ls-sub">Lucid Dream Neural System</div><div class="ls-bar"><div class="ls-fill" id="lsfill"></div></div><div class="ls-st" id="lsst">Initializing...</div></div>
+<div class="cur" id="cur"></div><div class="curf" id="curf"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div class="tc2" id="tc"></div>
+<nav class="nav">
+  <div class="nlogo" onclick="gp('home')"><div class="nli">🌙</div><span class="nlt">MyDream</span></div>
+  <div class="ntabs">
+    <button class="ntab active" onclick="gp('home')" data-page="home">🏠 হোম</button>
+    <button class="ntab" onclick="gp('portal')" data-page="portal">🌀 পোর্টাল</button>
+    <button class="ntab" onclick="gp('journal')" data-page="journal">📖 জার্নাল</button>
+    <button class="ntab" onclick="gp('audio')" data-page="audio">🎵 অডিও</button>
+    <button class="ntab" onclick="gp('training')" data-page="training">🧠 ট্রেনিং</button>
+    <button class="ntab" onclick="gp('analytics')" data-page="analytics">📊 Stats</button>
+    <button class="ntab" onclick="gp('light')" data-page="light">💡 লাইট</button>
+    <button class="ntab" onclick="gp('settings')" data-page="settings">⚙️ সেটিং</button>
+  </div>
+  <div class="nacts">
+    <div class="ndw"><div class="ndot" id="adot"></div><span id="nst">IDLE</span></div>
+    <button class="nbtn" onclick="reqN()">🔔</button>
+    <button class="nbtn" onclick="toggleFS()">⛶</button>
+    <button class="nbtn" id="wlbtn" onclick="toggleWL()">📱</button>
+  </div>
+</nav>
+<nav class="mbn"><div class="mni">
+  <button class="mt2 active" onclick="gp('home')" data-page="home"><span class="mti">🏠</span>হোম</button>
+  <button class="mt2" onclick="gp('portal')" data-page="portal"><span class="mti">🌀</span>পোর্টাল</button>
+  <button class="mt2" onclick="gp('journal')" data-page="journal"><span class="mti">📖</span>জার্নাল</button>
+  <button class="mt2" onclick="gp('audio')" data-page="audio"><span class="mti">🎵</span>অডিও</button>
+  <button class="mt2" onclick="gp('training')" data-page="training"><span class="mti">🧠</span>ট্রেনিং</button>
+  <button class="mt2" onclick="gp('analytics')" data-page="analytics"><span class="mti">📊</span>Stats</button>
+  <button class="mt2" onclick="gp('settings')" data-page="settings"><span class="mti">⚙️</span>সেটিং</button>
+</div></nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="wb">
+    <div style="position:absolute;right:-30px;top:-30px;width:170px;height:170px;background:radial-gradient(circle,rgba(0,245,255,.08),transparent);border-radius:50%;pointer-events:none"></div>
+    <div style="font-family:Orbitron,monospace;font-size:1.25rem;font-weight:700;color:var(--tp);margin-bottom:3px" id="greet">শুভ রাত! 🌙</div>
+    <div style="font-size:.86rem;color:var(--tm);margin-bottom:14px">আজ রাতে স্বপ্নের জগতে প্রবেশ করুন</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp" onclick="gp('portal')">🌀 ড্রিম পোর্টাল</button>
+      <button class="btn bs" onclick="gp('journal');newEntry()">✍️ স্বপ্ন লিখুন</button>
+      <button class="btn bg2" onclick="gp('audio');playP('theta')">🎵 দ্রুত সেশন</button>
+    </div>
+  </div>
+  <div class="gr g4" style="margin-bottom:13px">
+    <div class="gc sc"><div class="sv" id="s-tot">0</div><div class="sl2">মোট স্বপ্ন</div></div>
+    <div class="gc sc"><div class="sv" id="s-luc">0</div><div class="sl2">লুসিড স্বপ্ন</div></div>
+    <div class="gc sc"><div class="sv" id="s-stk">0</div><div class="sl2">ধারাবাহিকতা</div></div>
+    <div class="gc sc"><div class="sv" id="s-scr">0%</div><div class="sl2">লুসিডিটি</div></div>
+  </div>
+  <div class="qa">
+    <div class="qac" onclick="gp('audio');playP('theta')"><span style="font-size:1.7rem;display:block;margin-bottom:7px">🧘</span><div style="font-size:.76rem;font-weight:600;color:var(--tp)">মেডিটেশন</div><div style="font-size:.66rem;color:var(--tm)">Theta 4-8Hz</div></div>
+    <div class="qac" onclick="doRC()"><span style="font-size:1.7rem;display:block;margin-bottom:7px">👁️</span><div style="font-size:.76rem;font-weight:600;color:var(--tp)">রিয়েলিটি চেক</div><div style="font-size:.66rem;color:var(--tm)">এখনই করুন</div></div>
+    <div class="qac" onclick="gp('training')"><span style="font-size:1.7rem;display:block;margin-bottom:7px">⏰</span><div style="font-size:.76rem;font-weight:600;color:var(--tp)">WBTB টাইমার</div><div style="font-size:.66rem;color:var(--tm)">৫-৬ ঘণ্টা পর</div></div>
+    <div class="qac" onclick="gp('light')"><span style="font-size:1.7rem;display:block;margin-bottom:7px">💡</span><div style="font-size:.76rem;font-weight:600;color:var(--tp)">লাইট থেরাপি</div><div style="font-size:.66rem;color:var(--tm)">সার্কাডিয়ান</div></div>
+  </div>
+  <div class="gr g2">
+    <div class="gc">
+      <div class="st">স্লিপ সাইকেল ভিজুয়ালাইজার</div>
+      <div class="spviz" id="spviz"></div>
+      <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap"><span class="bdg bp2">█ REM</span><span class="bdg bgn">█ Light</span><span class="bdg bc">█ Deep</span><span class="bdg bg3">█ Awake</span></div>
+      <div style="margin-top:10px;font-size:.78rem;color:var(--tm);line-height:1.7">💡 WBTB: ৫-৬ ঘণ্টা পর REM পর্যায় সবচেয়ে দীর্ঘ ও প্রাণবন্ত থাকে।</div>
+    </div>
+    <div class="gc">
+      <div class="st">লুসিডিটি ইন্ডেক্স</div>
+      <div class="dw">
+        <svg width="175" height="135" viewBox="0 0 175 135" style="filter:drop-shadow(0 0 18px rgba(0,245,255,.28))">
+          <defs><linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#00f5ff"/><stop offset="100%" style="stop-color:#9d00ff"/></linearGradient></defs>
+          <path d="M 18 115 A 69 69 0 0 1 157 115" fill="none" stroke="rgba(0,245,255,.08)" stroke-width="9" stroke-linecap="round"/>
+          <path id="darc" d="M 18 115 A 69 69 0 0 1 157 115" fill="none" stroke="url(#dg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="216" stroke-dashoffset="216" style="transition:stroke-dashoffset 1.5s ease"/>
+          <text id="dval" x="87" y="96" text-anchor="middle" font-family="Orbitron" font-size="26" fill="url(#dg)" font-weight="700">0%</text>
+          <text x="87" y="113" text-anchor="middle" font-family="Rajdhani" font-size="10" fill="rgba(200,230,255,.4)">LUCIDITY SCORE</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="gc" style="margin-top:13px">
+    <div class="st">সাম্প্রতিক স্বপ্নসমূহ</div>
+    <div id="rdl"><div style="text-align:center;padding:22px;color:var(--tm);font-size:.84rem">🌙 এখনও কোনো স্বপ্ন নেই। প্রথম স্বপ্নটি লিখুন!</div></div>
+    <button class="btn bg2" style="width:100%;margin-top:8px" onclick="gp('journal');newEntry()">+ নতুন স্বপ্ন যোগ করুন</button>
+  </div>
+  <div class="gc gcp" style="margin-top:13px">
+    <div class="st" style="color:var(--c2)">নিউরোসায়েন্স — লুসিড ড্রিমিং</div>
+    <div class="gr g3">
+      <div style="text-align:center;padding:11px"><div style="font-size:1.9rem;margin-bottom:6px">🧠</div><div style="font-family:Orbitron,monospace;font-size:.68rem;color:var(--c2);margin-bottom:4px">PREFRONTAL CORTEX</div><div style="font-size:.76rem;color:var(--tm);line-height:1.5">লুসিড স্বপ্নে প্রিফ্রন্টাল কর্টেক্স সক্রিয় থাকে — স্বাভাবিক ঘুমে নিষ্ক্রিয়</div></div>
+      <div style="text-align:center;padding:11px"><div style="font-size:1.9rem;margin-bottom:6px">🌊</div><div style="font-family:Orbitron,monospace;font-size:.68rem;color:var(--c1);margin-bottom:4px">GAMMA WAVES</div><div style="font-size:.76rem;color:var(--tm);line-height:1.5">৪০Hz গামা তরঙ্গ লুসিড স্বপ্নে পাওয়া যায় — সচেতনতার চিহ্ন</div></div>
+      <div style="text-align:center;padding:11px"><div style="font-size:1.9rem;margin-bottom:6px">💤</div><div style="font-family:Orbitron,monospace;font-size:.68rem;color:var(--c5);margin-bottom:4px">REM SLEEP</div><div style="font-size:.76rem;color:var(--tm);line-height:1.5">REM পর্যায়ে স্বপ্ন সবচেয়ে প্রাণবন্ত ও লুসিড হওয়ার সম্ভাবনা সর্বাধিক</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div class="page" id="pp">
+  <div class="pw">
+    <canvas id="pc"></canvas>
+    <div class="hud">
+      <div class="ht">
+        <div class="hsb"><div class="hl">BRAIN STATE</div><div class="hs" id="hstate">BETA</div><div class="hh" id="hhz">14–30 Hz • সজাগ</div></div>
+        <div class="hstats">
+          <div class="hst">SESSION <span id="htimer">00:00</span></div>
+          <div class="hst">BINAURAL <span id="hbf">OFF</span></div>
+          <div class="hst">DEPTH <span id="hdepth">0%</span></div>
+        </div>
+      </div>
+      <div class="hcc">
+        <div class="bring" onclick="togBreath()">
+          <svg viewBox="0 0 124 124" width="124" height="124">
+            <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00f5ff"/><stop offset="100%" style="stop-color:#9d00ff"/></linearGradient></defs>
+            <circle cx="62" cy="62" r="54" stroke="rgba(0,245,255,.08)" stroke-width="7" fill="none"/>
+            <circle id="barc" cx="62" cy="62" r="54" stroke="url(#rg)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339" transform="rotate(-90 62 62)"/>
+          </svg>
+          <div class="brt"><div class="brph" id="bph">TAP START</div><div class="brcn" id="bcnt">◉</div><div style="font-size:.6rem;color:var(--tm)">শ্বাস</div></div>
+        </div>
+      </div>
+      <div class="bwm"><canvas id="bwc" width="175" height="52"></canvas></div>
+      <div class="hbot">
+        <div class="pctrl">
+          <button class="btn bp bi" id="ppbtn" onclick="togPortal()">▶</button>
+          <div class="pdiv"></div>
+          <button class="btn bg2 bi" onclick="gp('audio')">🎵</button>
+          <button class="btn bg2 bi" onclick="togVR()">🥽</button>
+          <button class="btn bg2 bi" onclick="togTheme()">🎨</button>
+          <button class="btn bg2 bi" onclick="capShot()">📸</button>
+          <div class="pdiv"></div>
+          <select id="thsel" style="background:rgba(0,10,35,.7);border:1px solid rgba(0,245,255,.14);color:var(--tp);padding:5px 9px;border-radius:9px;font-size:.73rem;cursor:pointer" onchange="setTheme(this.value)">
+            <option value="void">🌀 ভয়েড</option><option value="galaxy">🌌 গ্যালাক্সি</option><option value="ocean">🌊 সমুদ্র</option><option value="forest">🌲 বন</option><option value="cosmos">✨ মহাজগত</option><option value="neural">🧠 নিউরাল</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="vro" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.9);z-index:50;align-items:center;justify-content:center;flex-direction:column;gap:13px">
+      <div style="font-size:3.5rem">🥽</div>
+      <div style="font-family:Orbitron,monospace;font-size:.9rem;color:var(--c1);text-align:center">VR মোড সক্রিয়<br><span style="font-size:.76rem;color:var(--tm)">ফোন দুই চোখের সামনে ধরুন</span></div>
+      <button class="btn bd" onclick="togVR()">বন্ধ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNAL -->
+<div class="page" id="page-journal">
+  <div class="phd"><div class="pt">📖 স্বপ্ন জার্নাল</div><div class="psb">নিউরোলজিক্যাল ম্যাপিং ও সাইকোলজিক্যাল বিশ্লেষণ</div></div>
+  <div style="display:flex;gap:8px;margin-bottom:13px;flex-wrap:wrap">
+    <button class="btn bp" onclick="newEntry()">+ নতুন</button>
+    <button class="btn bs" onclick="analyzeAll()">🧠 AI বিশ্লেষণ</button>
+    <button class="btn bg2" onclick="expD()">📤 Export</button>
+    <button class="btn bg2" onclick="impD()">📥 Import</button>
+    <input type="text" id="dsrch" placeholder="🔍 স্বপ্ন খুঁজুন..." style="flex:1;min-width:160px" oninput="filterD(this.value)">
+  </div>
+  <div class="jg">
+    <div><div class="gc" style="padding:13px"><div class="st">তালিকা</div><div class="dl" id="dlist"><div style="text-align:center;padding:28px;color:var(--tm)">🌙 কোনো স্বপ্ন নেই</div></div></div></div>
+    <div><div class="gc" id="dfp"><div class="st" id="dfst">নতুন স্বপ্ন</div><div id="dfc"><div class="de"><div style="font-size:2.8rem;opacity:.3">🌙</div><div>বাম থেকে বাছুন বা নতুন লিখুন</div><button class="btn bp" onclick="newEntry()">+ নতুন</button></div></div></div></div>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<div class="page" id="page-audio">
+  <div class="phd"><div class="pt">🎵 নিউরাল অডিও ইঞ্জিন</div><div class="psb">বাইনারাল বিট · ব্রেইন মিউজিক · আইসোক্রোনিক টোনস</div></div>
+  <div class="gc" style="margin-bottom:13px;padding:13px">
+    <canvas id="avc" style="width:100%;height:155px;border-radius:13px;display:block;margin-bottom:13px;border:1px solid rgba(0,245,255,.09)"></canvas>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn bp bi" id="mpbtn" onclick="togAudio()">▶</button>
+      <div style="flex:1"><div style="display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--tm);margin-bottom:3px"><span>মাস্টার ভলিউম</span><span id="mvv">65%</span></div><input type="range" id="mv" min="0" max="100" value="65" oninput="setMV(this.value)"></div>
+      <div style="display:flex;gap:4px"><span class="bdg bc" id="chzbdg">— Hz</span><span class="bdg bp2" id="cstbdg">IDLE</span></div>
+    </div>
+  </div>
+  <div class="gc gcp" style="margin-bottom:13px">
+    <div class="st" style="color:var(--c2)">ব্রেইনওয়েভ প্রিসেট</div>
+    <div class="gr" style="grid-template-columns:repeat(3,1fr);gap:8px">
+      <div class="pcard" id="pc-delta" onclick="playP('delta')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">😴</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">DELTA</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">0.5–4 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">গভীর ঘুম</div></div>
+      <div class="pcard" id="pc-theta" onclick="playP('theta')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">🌊</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">THETA</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">4–8 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">স্বপ্ন/ধ্যান</div></div>
+      <div class="pcard" id="pc-alpha" onclick="playP('alpha')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">😌</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">ALPHA</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">8–13 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">শান্ত মন</div></div>
+      <div class="pcard" id="pc-beta" onclick="playP('beta')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">⚡</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">BETA</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">13–30 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">সক্রিয়</div></div>
+      <div class="pcard" id="pc-gamma" onclick="playP('gamma')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">✨</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">GAMMA</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">30–100 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">লুসিড</div></div>
+      <div class="pcard" id="pc-epsilon" onclick="playP('epsilon')"><span style="font-size:1.7rem;display:block;margin-bottom:6px">🌀</span><div style="font-family:Orbitron,monospace;font-size:.66rem;color:var(--tp);margin-bottom:2px">EPSILON</div><div style="font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c1)">0.1–0.5 Hz</div><div style="font-size:.61rem;color:var(--tm);margin-top:1px">গভীর ট্রান্স</div></div>
+    </div>
+  </div>
+  <div class="gr g2" style="margin-bottom:13px">
+    <div class="gc">
+      <div class="st">কাস্টম বাইনারাল</div>
+      <div class="fg"><label>বেস (Hz)</label><input type="range" id="bfreq" min="40" max="500" value="200" oninput="updCB()"><div class="rv"><span id="bfv">200</span> Hz</div></div>
+      <div class="fg"><label>বিট (Hz)</label><input type="range" id="btfreq" min="0.5" max="40" step="0.5" value="6" oninput="updCB()"><div class="rv"><span id="btfv">6.0</span> Hz</div></div>
+      <div class="fg"><label>ওয়েভফর্ম</label><select id="wtype"><option value="sine">Sine</option><option value="triangle">Triangle</option><option value="sawtooth">Sawtooth</option><option value="square">Square</option></select></div>
+      <button class="btn bp" style="width:100%" onclick="playCustom()">⚡ কাস্টম চালান</button>
+    </div>
+    <div class="gc">
+      <div class="st">আইসোক্রোনিক টোনস</div>
+      <div class="fg"><label>পালস (Hz)</label><input type="range" id="isof" min="1" max="40" value="7" oninput="document.getElementById('isofv').textContent=this.value"><div class="rv"><span id="isofv">7</span> Hz</div></div>
+      <div class="fg"><label>টোন (Hz)</label><input type="range" id="isotone" min="100" max="600" value="285" oninput="document.getElementById('isotv').textContent=this.value"><div class="rv"><span id="isotv">285</span> Hz</div></div>
+      <div class="fg"><label>ডিউটি সাইকেল</label><input type="range" id="isodc" min="10" max="90" value="50" oninput="document.getElementById('isodv').textContent=this.value+'%'"><div class="rv" id="isodv">50%</div></div>
+      <button class="btn bs" style="width:100%" onclick="playIso()">🎯 আইসোক্রোনিক</button>
+    </div>
+  </div>
+  <div class="gc" style="margin-bottom:13px">
+    <div class="st">অ্যাম্বিয়েন্ট মিক্সার</div>
+    <div class="mtr"><span style="font-size:1.1rem;width:28px;text-align:center">🌧️</span><div style="flex:1"><div style="font-size:.83rem;font-weight:600;color:var(--tp)">বৃষ্টির শব্দ</div><div style="font-size:.63rem;color:var(--tm)">Pink Noise</div></div><div style="flex:2"><input type="range" min="0" max="100" value="0" style="width:100%" oninput="setAmb('rain',this.value)"></div><div style="font-size:.68rem;color:var(--c1);width:30px;text-align:right" id="rain-v">0%</div><button class="btn bg2" style="padding:4px 8px;font-size:.73rem" onclick="togAmb('rain')">▶</button></div>
+    <div class="mtr"><span style="font-size:1.1rem;width:28px;text-align:center">🌊</span><div style="flex:1"><div style="font-size:.83rem;font-weight:600;color:var(--tp)">সমুদ্রের ঢেউ</div><div style="font-size:.63rem;color:var(--tm)">Brown Noise</div></div><div style="flex:2"><input type="range" min="0" max="100" value="0" style="width:100%" oninput="setAmb('ocean',this.value)"></div><div style="font-size:.68rem;color:var(--c1);width:30px;text-align:right" id="ocean-v">0%</div><button class="btn bg2" style="padding:4px 8px;font-size:.73rem" onclick="togAmb('ocean')">▶</button></div>
+    <div class="mtr"><span style="font-size:1.1rem;width:28px;text-align:center">🔥</span><div style="flex:1"><div style="font-size:.83rem;font-weight:600;color:var(--tp)">আগুনের শিখা</div><div style="font-size:.63rem;color:var(--tm)">Warm Noise</div></div><div style="flex:2"><input type="range" min="0" max="100" value="0" style="width:100%" oninput="setAmb('fire',this.value)"></div><div style="font-size:.68rem;color:var(--c1);width:30px;text-align:right" id="fire-v">0%</div><button class="btn bg2" style="padding:4px 8px;font-size:.73rem" onclick="togAmb('fire')">▶</button></div>
+    <div class="mtr"><span style="font-size:1.1rem;width:28px;text-align:center">🌲</span><div style="flex:1"><div style="font-size:.83rem;font-weight:600;color:var(--tp)">বনের শব্দ</div><div style="font-size:.63rem;color:var(--tm)">Nature</div></div><div style="flex:2"><input type="range" min="0" max="100" value="0" style="width:100%" oninput="setAmb('forest',this.value)"></div><div style="font-size:.68rem;color:var(--c1);width:30px;text-align:right" id="forest-v">0%</div><button class="btn bg2" style="padding:4px 8px;font-size:.73rem" onclick="togAmb('forest')">▶</button></div>
+    <div class="mtr"><span style="font-size:1.1rem;width:28px;text-align:center">🎵</span><div style="flex:1"><div style="font-size:.83rem;font-weight:600;color:var(--tp)">ব্রেইন মিউজিক</div><div style="font-size:.63rem;color:var(--tm)">432 Hz</div></div><div style="flex:2"><input type="range" min="0" max="100" value="0" style="width:100%" oninput="setAmb('brain',this.value)"></div><div style="font-size:.68rem;color:var(--c1);width:30px;text-align:right" id="brain-v">0%</div><button class="btn bg2" style="padding:4px 8px;font-size:.73rem" onclick="togAmb('brain')">▶</button></div>
+  </div>
+  <div class="gc gcg">
+    <div class="st" style="color:var(--c4)">সলফেজিও ফ্রিকোয়েন্সি</div>
+    <div class="hzgrid">
+      <div class="hzc" onclick="playSol(174,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">174 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">ব্যথা নিরাময়</div></div>
+      <div class="hzc" onclick="playSol(285,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">285 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">টিস্যু পুনর্গঠন</div></div>
+      <div class="hzc" onclick="playSol(396,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">396 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">মুক্তি ও শান্তি</div></div>
+      <div class="hzc" onclick="playSol(417,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">417 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">পরিবর্তন</div></div>
+      <div class="hzc" onclick="playSol(528,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">528 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">DNA মেরামত</div></div>
+      <div class="hzc" onclick="playSol(639,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">639 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">সম্পর্ক</div></div>
+      <div class="hzc" onclick="playSol(741,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">741 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">প্রকাশ</div></div>
+      <div class="hzc" onclick="playSol(852,this)"><div style="font-family:Orbitron,monospace;font-size:.95rem;font-weight:700;color:var(--c1);margin-bottom:2px">852 Hz</div><div style="font-size:.73rem;color:var(--tp);font-weight:600">তৃতীয় নেত্র</div></div>
+    </div>
+    <button class="btn bd" style="margin-top:11px" onclick="stopSol()">⏹ সব বন্ধ</button>
+  </div>
+</div>
+
+<!-- TRAINING -->
+<div class="page" id="page-training">
+  <div class="phd"><div class="pt">🧠 লুসিড ড্রিম ট্রেনিং</div><div class="psb">নিউরোলজি ও সাইকোলজি ভিত্তিক প্রমাণিত কৌশল</div></div>
+  <div class="gc" style="margin-bottom:13px">
+    <div class="st">প্রমাণিত কৌশলসমূহ</div>
+    <div class="gr g3">
+      <div class="tcard" onclick="openTech('mild')"><div style="font-size:2rem;margin-bottom:9px">🔁</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">MILD</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">ঘুমানোর আগে বারবার ইন্টেনশন সেট করুন</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ১০–১৫ মিনিট</div></div>
+      <div class="tcard" onclick="openTech('wild')"><div style="font-size:2rem;margin-bottom:9px">🌀</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">WILD</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">জাগ্রত থেকে সরাসরি স্বপ্নে প্রবেশ</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ২০–৩০ মিনিট</div></div>
+      <div class="tcard" onclick="openTech('wbtb')"><div style="font-size:2rem;margin-bottom:9px">⏰</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">WBTB</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">৫-৬ ঘণ্টা পর জেগে আবার ঘুমানো</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ৩০–৬০ মিনিট</div></div>
+      <div class="tcard" onclick="openTech('fild')"><div style="font-size:2rem;margin-bottom:9px">🖐️</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">FILD</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">ঘুমন্ত অবস্থায় আঙুল সামান্য নাড়ানো</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ৫ মিনিট</div></div>
+      <div class="tcard" onclick="openTech('deild')"><div style="font-size:2rem;margin-bottom:9px">🔄</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">DEILD</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">স্বপ্ন ভাঙার পর স্থির থেকে আবার প্রবেশ</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ২–৫ মিনিট</div></div>
+      <div class="tcard" onclick="openTech('ssild')"><div style="font-size:2rem;margin-bottom:9px">🌙</div><div style="font-family:Orbitron,monospace;font-size:.8rem;color:var(--tp);margin-bottom:4px;font-weight:600">SSILD</div><div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin-bottom:9px">ইন্দ্রিয় পর্যায়ক্রমে সচেতন করা</div><div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--c1)">⏱ ১৫–২০ মিনিট</div></div>
+    </div>
+  </div>
+  <div class="gc gcr" style="margin-bottom:13px">
+    <div class="st" style="color:var(--c3)">রিয়েলিটি চেক</div>
+    <div class="gr" style="grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">✋</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">হাত দেখুন</div><div style="font-size:.7rem;color:var(--tm)">স্বপ্নে ৬+ আঙুল</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">👃</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">নাক চেপে শ্বাস</div><div style="font-size:.7rem;color:var(--tm)">স্বপ্নে নেওয়া যায়!</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">📖</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">লেখা পড়ুন</div><div style="font-size:.7rem;color:var(--tm)">স্বপ্নে বদলায়</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">🦘</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">লাফ দিন</div><div style="font-size:.7rem;color:var(--tm)">স্বপ্নে উড়বেন!</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">⏱️</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">সময় দেখুন</div><div style="font-size:.7rem;color:var(--tm)">স্বপ্নে বদলায়</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">💡</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">লাইট সুইচ</div><div style="font-size:.7rem;color:var(--tm)">কাজ করে না</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">🪞</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">আয়নায় দেখুন</div><div style="font-size:.7rem;color:var(--tm)">প্রতিফলন বিকৃত</div></div>
+      <div class="rccd" onclick="rcAnim(this)"><span style="font-size:1.8rem;display:block;margin-bottom:6px">🤏</span><div style="font-size:.78rem;font-weight:600;color:var(--tp);margin-bottom:3px">চিমটি দিন</div><div style="font-size:.7rem;color:var(--tm)">ব্যথা ভিন্ন</div></div>
+    </div>
+    <div style="margin-top:11px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn bp" onclick="setRCRem()">⏰ রিমাইন্ডার সেট</button>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--tm)">আজকের RC: <span id="rcc" style="color:var(--c1)">0</span>/10</span>
+    </div>
+  </div>
+  <div class="gc" style="margin-bottom:13px">
+    <div class="st">⏰ WBTB টাইমার</div>
+    <div class="wbb">
+      <div><div style="font-size:.68rem;color:var(--tm);letter-spacing:2px;margin-bottom:3px">ঘুমানোর সময়</div><input type="time" id="slt" value="23:00" style="width:105px;text-align:center;font-family:Orbitron,monospace;font-size:.86rem"></div>
+      <div style="text-align:center"><div class="wbd" id="wbtbcd">—:—</div><div style="font-size:.68rem;color:var(--tm)">WBTB পর্যন্ত বাকি</div></div>
+      <div><div style="font-size:.68rem;color:var(--tm);letter-spacing:2px;margin-bottom:3px">উঠুন</div><div style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--c1)" id="wbtbwt">—:—</div></div>
+    </div>
+    <div style="margin-top:11px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp" onclick="startWBTB()">▶ শুরু</button>
+      <button class="btn bg2" onclick="stopWBTB()">⏹ বন্ধ</button>
+      <select id="wbtbh"><option value="5">৫ ঘণ্টা পর (সেরা)</option><option value="5.5">৫.৫ ঘণ্টা পর</option><option value="6">৬ ঘণ্টা পর</option><option value="4.5">৪.৫ ঘণ্টা পর</option></select>
+    </div>
+  </div>
+  <div class="gc gcp">
+    <div class="st" style="color:var(--c2)">💭 ড্রিম ইনকিউবেশন</div>
+    <div class="fg"><label>স্বপ্নে যা দেখতে চাই</label><textarea id="inctxt" placeholder="আমি স্বপ্নে আকাশে উড়ব, আমার সমস্যার সমাধান খুঁজব..."></textarea></div>
+    <div class="fg"><label>মানসিক অবস্থা</label><select id="incmood"><option>🏔️ অ্যাডভেঞ্চার</option><option>💚 নিরাময়</option><option>🎨 সৃজনশীলতা</option><option>🧩 সমস্যা সমাধান</option><option>❤️ সংযোগ</option></select></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp" onclick="saveInc()">💾 সেভ করুন</button>
+      <button class="btn bs" onclick="playAff()">🎙️ অ্যাফার্মেশন</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="page" id="page-analytics">
+  <div class="phd"><div class="pt">📊 স্বপ্ন বিশ্লেষণ</div><div class="psb">নিউরোলজিক্যাল প্যাটার্ন ও সাইকোলজিক্যাল অন্তর্দৃষ্টি</div></div>
+  <div class="gr g4" style="margin-bottom:13px">
+    <div class="gc sc"><div class="sv" id="a-tot">0</div><div class="sl2">মোট</div></div>
+    <div class="gc sc"><div class="sv" id="a-luc">0</div><div class="sl2">লুসিড</div></div>
+    <div class="gc sc"><div class="sv" id="a-avg">—</div><div class="sl2">গড় স্পষ্টতা</div></div>
+    <div class="gc sc"><div class="sv" id="a-stk">0</div><div class="sl2">স্ট্রিক</div></div>
+  </div>
+  <div class="gc" style="margin-bottom:13px"><div class="st">স্বপ্ন ইতিহাস (গত ৩০ দিন)</div><canvas id="anvc" style="width:100%;height:210px;display:block;border-radius:13px;border:1px solid rgba(0,245,255,.09)"></canvas></div>
+  <div class="gr g2" style="margin-bottom:13px">
+    <div class="gc">
+      <div class="st">সাপ্তাহিক হিটম্যাপ</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:5px;font-size:.6rem;color:var(--tm);text-align:center"><span>র</span><span>স</span><span>ম</span><span>বু</span><span>বৃ</span><span>শু</span><span>শ</span></div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px" id="hmw"></div>
+    </div>
+    <div class="gc"><div class="st">থিম বিশ্লেষণ</div><canvas id="thmc" style="width:100%;height:210px;display:block"></canvas></div>
+  </div>
+  <div class="gc gcp">
+    <div class="st" style="color:var(--c2)">🔍 AI মনোবৈজ্ঞানিক অন্তর্দৃষ্টি</div>
+    <div id="inslist">
+      <div class="insc"><div style="font-size:1.4rem;flex-shrink:0">🧠</div><div style="flex:1;font-size:.82rem;color:var(--ts);line-height:1.6"><div style="font-family:Orbitron,monospace;font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:3px">NEUROSCIENCE</div>কমপক্ষে ৭টি স্বপ্ন লিখলে প্যাটার্ন বিশ্লেষণ শুরু হবে।</div></div>
+      <div class="insc" style="margin-top:8px"><div style="font-size:1.4rem;flex-shrink:0">💡</div><div style="flex:1;font-size:.82rem;color:var(--ts);line-height:1.6"><div style="font-family:Orbitron,monospace;font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:3px">PSYCHOLOGY</div>Carl Jung এর মতে স্বপ্নের প্রতীক অচেতন মনের ভাষা।</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHT -->
+<div class="page" id="page-light">
+  <div class="phd"><div class="pt">💡 লাইট থেরাপি সিস্টেম</div><div class="psb">সার্কাডিয়ান রিদম · ফটোথেরাপি · নিউরাল স্টিমুলেশন</div></div>
+  <div class="lw"><canvas id="lc"></canvas><div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:.68rem;color:rgba(255,255,255,.55);text-align:center;pointer-events:none" id="linfo">ক্লিক করুন থেরাপি শুরু করতে</div></div>
+  <div class="gr g2" style="margin-bottom:13px">
+    <div class="gc">
+      <div class="st">রঙ ও তীব্রতা</div>
+      <div class="fg"><label>রঙ বাছুন</label>
+        <div class="cpal" id="cpal">
+          <div class="cpi s" style="background:#1a0a4a" data-c="#1a0a4a" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#000066" data-c="#000066" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#440022" data-c="#440022" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#ff3300" data-c="#ff3300" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#ff8800" data-c="#ff8800" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#ffff00" data-c="#ffff00" onclick="setLC(this)"></div>
+          <div class="cpi" style="background:#ffffff" data-c="#ffffff" onclick="setLC(this)"></div>
+          <input type="color" id="clcol" onchange="lColor=this.value" style="width:38px;height:38px;border-radius:9px">
+        </div>
+      </div>
+      <div class="fg"><label>উজ্জ্বলতা</label><input type="range" id="lbr" min="5" max="100" value="60" oninput="lBr=parseInt(this.value);document.getElementById('lbrv').textContent=this.value"><div class="rv"><span id="lbrv">60</span>%</div></div>
+      <div class="fg"><label>ফ্লিকার Hz</label><input type="range" id="lfk" min="0" max="40" value="0" oninput="lFk=parseFloat(this.value);document.getElementById('lfkv').textContent=this.value"><div class="rv"><span id="lfkv">0</span> Hz</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bp" onclick="startLT()">▶ শুরু</button><button class="btn bd" onclick="stopLT()">⏹ বন্ধ</button></div>
+    </div>
+    <div class="gc">
+      <div class="st">থেরাপি প্রিসেট</div>
+      <div class="srow" style="cursor:pointer" onclick="setLP('morning')"><div style="font-size:1rem;width:26px;text-align:center">🌅</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">মর্নিং অ্যাওয়েকেনিং</div><div style="font-size:.72rem;color:var(--tm)">৫৫০০K — কর্টিসল</div></div><button class="btn bg2" style="padding:4px 9px;font-size:.73rem">চালু</button></div>
+      <div class="srow" style="cursor:pointer" onclick="setLP('dream')"><div style="font-size:1rem;width:26px;text-align:center">🌙</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">ড্রিম ইন্ডাকশন</div><div style="font-size:.72rem;color:var(--tm)">গাঢ় বেগুনি — মেলাটোনিন</div></div><button class="btn bg2" style="padding:4px 9px;font-size:.73rem">চালু</button></div>
+      <div class="srow" style="cursor:pointer" onclick="setLP('relax')"><div style="font-size:1rem;width:26px;text-align:center">😌</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">রিল্যাক্সেশন</div><div style="font-size:.72rem;color:var(--tm)">উষ্ণ লাল-কমলা</div></div><button class="btn bg2" style="padding:4px 9px;font-size:.73rem">চালু</button></div>
+      <div class="srow" style="cursor:pointer" onclick="setLP('gamma')"><div style="font-size:1rem;width:26px;text-align:center">⚡</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">গামা স্টিমুলেশন</div><div style="font-size:.72rem;color:var(--tm)">৪০Hz ফ্লিকার</div></div><button class="btn bg2" style="padding:4px 9px;font-size:.73rem">চালু</button></div>
+      <div class="srow" style="cursor:pointer" onclick="setLP('ld')"><div style="font-size:1rem;width:26px;text-align:center">🌀</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">লুসিড ড্রিম</div><div style="font-size:.72rem;color:var(--tm)">ধীর পালস + বেগুনি</div></div><button class="btn bg2" style="padding:4px 9px;font-size:.73rem">চালু</button></div>
+    </div>
+  </div>
+  <div class="gc gcg">
+    <div class="st" style="color:var(--c4)">সার্কাডিয়ান রিদম গাইড</div>
+    <div class="gr g3">
+      <div style="text-align:center;padding:10px"><div style="font-size:1.7rem;margin-bottom:5px">🌅</div><div style="font-family:Orbitron,monospace;font-size:.65rem;color:var(--c4);margin-bottom:3px">সকাল ৬–৮</div><div style="font-size:.75rem;color:var(--tm);line-height:1.5">উজ্জ্বল নীল-সাদা আলো — কর্টিসল বৃদ্ধি</div></div>
+      <div style="text-align:center;padding:10px"><div style="font-size:1.7rem;margin-bottom:5px">🌆</div><div style="font-family:Orbitron,monospace;font-size:.65rem;color:var(--c3);margin-bottom:3px">বিকেল ৫–৭</div><div style="font-size:.75rem;color:var(--tm);line-height:1.5">উষ্ণ হলুদ আলো — মেলাটোনিন শুরু</div></div>
+      <div style="text-align:center;padding:10px"><div style="font-size:1.7rem;margin-bottom:5px">🌙</div><div style="font-family:Orbitron,monospace;font-size:.65rem;color:var(--c2);margin-bottom:3px">রাত ৯–১১</div><div style="font-size:.75rem;color:var(--tm);line-height:1.5">শুধু লাল/অ্যাম্বার আলো — ঘুমের প্রস্তুতি</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="phd"><div class="pt">⚙️ সেটিংস</div><div class="psb">MyDream সিস্টেম কনফিগারেশন</div></div>
+  <div class="gr g2">
+    <div>
+      <div class="gc" style="margin-bottom:13px">
+        <div class="st">🔔 নোটিফিকেশন</div>
+        <div class="trow"><div class="ti"><div class="tl">রিয়েলিটি চেক রিমাইন্ডার</div><div class="td">প্রতি ঘণ্টায়</div></div><label class="tg"><input type="checkbox" checked><span class="sl"></span></label></div>
+        <div class="trow"><div class="ti"><div class="tl">WBTB অ্যালার্ম</div><div class="td">নির্ধারিত সময়ে</div></div><label class="tg"><input type="checkbox" checked><span class="sl"></span></label></div>
+        <div class="trow"><div class="ti"><div class="tl">জার্নাল রিমাইন্ডার</div><div class="td">সকালে স্বপ্ন লিখুন</div></div><label class="tg"><input type="checkbox"><span class="sl"></span></label></div>
+      </div>
+      <div class="gc">
+        <div class="st">🎵 অডিও</div>
+        <div class="trow"><div class="ti"><div class="tl">বাইনারাল স্বয়ংক্রিয়</div><div class="td">ঘুমের পর্যায় অনুযায়ী</div></div><label class="tg"><input type="checkbox" checked><span class="sl"></span></label></div>
+        <div class="trow"><div class="ti"><div class="tl">ফেড আউট</div><div class="td">৩০ মিনিট পর বন্ধ</div></div><label class="tg"><input type="checkbox" checked><span class="sl"></span></label></div>
+        <div class="fg" style="margin-top:11px"><label>ডিফল্ট ভলিউম</label><input type="range" min="0" max="100" value="65" oninput="document.getElementById('dvv').textContent=this.value+'%'"><div class="rv" id="dvv">65%</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="gc" style="margin-bottom:13px">
+        <div class="st">⏰ অ্যালার্ম ম্যানেজার</div>
+        <div id="alarml">
+          <div class="alarm-c"><div class="alarm-t">05:30</div><div><div style="font-size:.84rem;font-weight:600;color:var(--tp)">WBTB অ্যালার্ম</div><div style="font-size:.71rem;color:var(--tm)">সোম–শুক্র</div></div><label class="tg" style="margin-left:auto"><input type="checkbox" checked><span class="sl"></span></label></div>
+          <div class="alarm-c"><div class="alarm-t">07:00</div><div><div style="font-size:.84rem;font-weight:600;color:var(--tp)">ড্রিম জার্নাল</div><div style="font-size:.71rem;color:var(--tm)">প্রতিদিন</div></div><label class="tg" style="margin-left:auto"><input type="checkbox" checked><span class="sl"></span></label></div>
+        </div>
+        <button class="btn bg2" style="width:100%;margin-top:8px" onclick="addAlarm()">+ নতুন অ্যালার্ম</button>
+      </div>
+      <div class="gc" style="margin-bottom:13px">
+        <div class="st">💾 ডেটা</div>
+        <div class="srow"><div style="font-size:1rem;width:26px;text-align:center">📤</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">Export ডেটা</div><div style="font-size:.72rem;color:var(--tm)">JSON ফাইলে</div></div><button class="btn bg2" style="padding:5px 10px;font-size:.76rem" onclick="expD()">Export</button></div>
+        <div class="srow"><div style="font-size:1rem;width:26px;text-align:center">📥</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">Import ডেটা</div><div style="font-size:.72rem;color:var(--tm)">ব্যাকআপ লোড</div></div><button class="btn bg2" style="padding:5px 10px;font-size:.76rem" onclick="impD()">Import</button></div>
+        <div class="srow"><div style="font-size:1rem;width:26px;text-align:center">🗑️</div><div style="flex:1"><div style="font-size:.86rem;font-weight:600;color:var(--tp)">সব মুছুন</div><div style="font-size:.72rem;color:var(--tm)">সব ডেটা ডিলিট</div></div><button class="btn bd" style="padding:5px 10px;font-size:.76rem" onclick="clearAll()">Delete</button></div>
+      </div>
+      <div class="gc">
+        <div class="st">ℹ️ সম্পর্কে</div>
+        <div style="font-size:.8rem;color:var(--tm);line-height:2">
+          Version: <span style="color:var(--c1)">2.0.0</span><br>Audio: <span style="color:var(--ts)">Web Audio API</span><br>Visual: <span style="color:var(--ts)">Canvas 2D</span><br>Storage: <span style="color:var(--ts)">LocalStorage</span><br>VR: <span style="color:var(--ts)">WebXR Simulated</span><br>Screen: <span style="color:var(--ts)">Wake Lock API</span>
+        </div>
+        <div style="margin-top:9px;padding:9px;border-radius:9px;background:rgba(0,245,255,.04);border:1px solid rgba(0,245,255,.09);font-size:.74rem;color:var(--tm)">⚠️ গুরুতর ঘুমের সমস্যায় চিকিৎসকের পরামর্শ নিন।</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="techmo"><div class="md"><div class="mh"><div class="mtt" id="mttl">কৌশল</div><div class="mcc" onclick="cmo('techmo')">✕</div></div><div id="mbody"></div></div></div>
+<div class="mo" id="rcmo">
+  <div class="md">
+    <div class="mh"><div class="mtt">✅ রিয়েলিটি চেক</div><div class="mcc" onclick="cmo('rcmo')">✕</div></div>
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:3.5rem;margin-bottom:13px" id="rcmi">✋</div>
+      <div style="font-family:Orbitron,monospace;font-size:.9rem;color:var(--tp);margin-bottom:8px" id="rcmt">হাত দেখুন</div>
+      <div style="font-size:.84rem;color:var(--tm);line-height:1.7;margin-bottom:18px" id="rcmd">আঙুল গণনা করুন।</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--c1);margin-bottom:5px">আমি কি স্বপ্নে?</div>
+      <div style="font-size:.76rem;color:var(--tm);margin-bottom:18px">সৎভাবে নিজেকে প্রশ্ন করুন</div>
+      <div style="display:flex;gap:9px;justify-content:center">
+        <button class="btn bp" onclick="confRC(true)">✅ সচেতন</button>
+        <button class="btn bg2" onclick="confRC(false)">😴 স্বপ্নে</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const S={dreams:[],curD:null,aOn:false,pOn:false,brOn:false,sTime:0,sIv:null,rcCnt:0,wIv:null,wl:null,preset:null,lOn:false,amb:{},vrOn:false,theme:'void',sol:null,iso:null,isoG:null,clarity:null,emos:[],syms:[]};
+let ctx=null,mG=null,an=null,bL=null,bR=null,bG=null,bM=null,pCvs=null,pCtx=null,pT=0,ptcls=[],brTO=null,brRun=false,lCvs=null,lCtx=null,lColor='#1a0a4a',lBr=60,lFk=0;
+
+function initA(){if(ctx)return;try{ctx=new(window.AudioContext||window.webkitAudioContext)();mG=ctx.createGain();mG.gain.value=.65;an=ctx.createAnalyser();an.fftSize=2048;mG.connect(an);an.connect(ctx.destination);}catch(e){}}
+function ensA(){if(!ctx)initA();if(ctx&&ctx.state==='suspended')ctx.resume();}
+const PR={delta:{b:200,beat:2,l:'DELTA',s:'গভীর ঘুম'},theta:{b:200,beat:6,l:'THETA',s:'ধ্যান/স্বপ্ন'},alpha:{b:200,beat:10,l:'ALPHA',s:'শান্ত মন'},beta:{b:200,beat:20,l:'BETA',s:'সক্রিয়'},gamma:{b:200,beat:40,l:'GAMMA',s:'লুসিড'},epsilon:{b:200,beat:.3,l:'EPSILON',s:'গভীর ট্রান্স'}};
+function stopBin(){[bL,bR].forEach(n=>{if(n)try{n.stop()}catch(e){}});[bG,bM].forEach(n=>{if(n)try{n.disconnect()}catch(e){}});bL=bR=bG=bM=null;}
+function playP(n){ensA();if(!ctx)return;stopBin();const p=PR[n];if(!p)return;S.preset=n;const mg=ctx.createChannelMerger(2),g=ctx.createGain();g.gain.value=.32;mg.connect(g);g.connect(mG);const L=ctx.createOscillator(),R=ctx.createOscillator();L.type=R.type='sine';L.frequency.value=p.b;R.frequency.value=p.b+p.beat;const lg=ctx.createGain(),rg=ctx.createGain();L.connect(lg);lg.connect(mg,0,0);R.connect(rg);rg.connect(mg,0,1);L.start();R.start();bL=L;bR=R;bG=g;bM=mg;S.aOn=true;document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('active'));const el=document.getElementById('pc-'+n);if(el)el.classList.add('active');setNSt(p.l);const ids1=['chzbdg','hbf'];ids1.forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=p.beat.toFixed(1)+' Hz';});const ids2=['cstbdg','hstate'];ids2.forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=p.l;});const hh=document.getElementById('hhz');if(hh)hh.textContent=p.beat.toFixed(1)+' Hz \u2014 '+p.s;const mb=document.getElementById('mpbtn');if(mb)mb.textContent='\u23F8';toast('\uD83C\uDFB5',p.l+' \u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2',p.beat+' Hz \u2014 '+p.s);}
+function playCustom(){ensA();if(!ctx)return;stopBin();const b=parseFloat(document.getElementById('bfreq').value),bt=parseFloat(document.getElementById('btfreq').value),wt=document.getElementById('wtype').value;const mg=ctx.createChannelMerger(2),g=ctx.createGain();g.gain.value=.28;mg.connect(g);g.connect(mG);const L=ctx.createOscillator(),R=ctx.createOscillator();L.type=R.type=wt;L.frequency.value=b;R.frequency.value=b+bt;L.connect(mg,0,0);R.connect(mg,0,1);L.start();R.start();bL=L;bR=R;bG=g;bM=mg;S.aOn=true;toast('\u26A1','\u0995\u09BE\u09B8\u09CD\u099F\u09AE \u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2',b+'Hz + '+bt+'Hz');}
+function playIso(){ensA();if(!ctx)return;if(S.iso)try{S.iso.stop()}catch(e){};const f=parseFloat(document.getElementById('isof').value),t=parseFloat(document.getElementById('isotone').value),d=parseFloat(document.getElementById('isodc').value)/100,per=1/f;const o=ctx.createOscillator();o.type='sine';o.frequency.value=t;if(!S.isoG){S.isoG=ctx.createGain();S.isoG.connect(mG);}o.connect(S.isoG);o.start();S.iso=o;const pu=()=>{if(!S.iso)return;const ct=ctx.currentTime;S.isoG.gain.cancelScheduledValues(ct);S.isoG.gain.setValueAtTime(1,ct);S.isoG.gain.setValueAtTime(0,ct+per*d);S.isoG.gain.setValueAtTime(1,ct+per);setTimeout(pu,per*1000);};pu();toast('\uD83C\uDFAF','\u0986\u0987\u09B8\u09CB\u0995\u09CD\u09B0\u09CB\u09A8\u09BF\u0995',t+'Hz @ '+f+'Hz');}
+function cNoise(type){ensA();if(!ctx)return null;const sz=ctx.sampleRate*2,buf=ctx.createBuffer(1,sz,ctx.sampleRate),d=buf.getChannelData(0);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;for(let i=0;i<sz;i++){const w=Math.random()*2-1;if(type==='brown'){d[i]=(b0+w*.1)/1.1;b0=d[i]*.98;}else if(type==='pink'){b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)/8;b6=w*.115926;}else d[i]=w;}const s=ctx.createBufferSource();s.buffer=buf;s.loop=true;return s;}
+const AC={rain:{n:'pink',f:4000},ocean:{n:'brown',f:800},fire:{n:'brown',f:300},forest:{n:'pink',f:2000},brain:{n:'white',f:432}};
+function togAmb(nm){ensA();if(!ctx)return;if(S.amb[nm]){try{S.amb[nm].s.stop()}catch(e){}try{S.amb[nm].g.disconnect()}catch(e){}delete S.amb[nm];return;}const c=AC[nm];if(!c)return;const s=cNoise(c.n);if(!s)return;const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=c.f;const g=ctx.createGain();g.gain.value=0;s.connect(fl);fl.connect(g);g.connect(mG);s.start();S.amb[nm]={s,fl,g};}
+function setAmb(nm,v){const el=document.getElementById(nm+'-v');if(el)el.textContent=v+'%';if(!S.amb[nm])togAmb(nm);if(S.amb[nm])S.amb[nm].g.gain.value=v/100*.45;}
+function playSol(f,el){ensA();if(!ctx)return;if(S.sol)try{S.sol.stop()}catch(e){};const o=ctx.createOscillator(),g=ctx.createGain();g.gain.value=.18;o.type='sine';o.frequency.value=f;o.connect(g);g.connect(mG);o.start();S.sol=o;document.querySelectorAll('.hzc').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');toast('\uD83C\uDFB5','\u09B8\u09B2\u09AB\u09C7\u099C\u09BF\u0993 '+f+' Hz','\u09B9\u09BF\u09B2\u09BF\u0982 \u09B8\u0995\u09CD\u09B0\u09BF\u09AF\u09BC');}
+function stopSol(){if(S.sol)try{S.sol.stop()}catch(e){};S.sol=null;document.querySelectorAll('.hzc').forEach(c=>c.classList.remove('active'));}
+function setMV(v){if(mG)mG.gain.value=v/100;const el=document.getElementById('mvv');if(el)el.textContent=v+'%';}
+function updCB(){const bf=document.getElementById('bfv'),btf=document.getElementById('btfv');if(bf)bf.textContent=document.getElementById('bfreq').value;if(btf)btf.textContent=parseFloat(document.getElementById('btfreq').value).toFixed(1);}
+function togAudio(){if(S.aOn){stopBin();S.aOn=false;const mb=document.getElementById('mpbtn');if(mb)mb.textContent='\u25B6';setNSt('IDLE');}else playP(S.preset||'theta');}
+function setNSt(l){const ns=document.getElementById('nst');if(ns)ns.textContent=l;const ad=document.getElementById('adot');if(ad)ad.classList.add('on');}
+const TH={void:{bg:'#020208',c:['#00f5ff','#9d00ff','#0033cc']},galaxy:{bg:'#000510',c:['#ffffff','#aad4ff','#ffd700']},ocean:{bg:'#001a33',c:['#00b4d8','#48cae4','#90e0ef']},forest:{bg:'#001a00',c:['#00ff41','#39ff14','#00c853']},cosmos:{bg:'#04000f',c:['#ff006e','#9d00ff','#ffd700']},neural:{bg:'#000820',c:['#00f5ff','#39ff14','#ff006e']}};
+function h2r(h){return parseInt(h.slice(1,3),16)+','+parseInt(h.slice(3,5),16)+','+parseInt(h.slice(5,7),16);}
+function initP(){pCvs=document.getElementById('pc');if(!pCvs)return;const w=pCvs.parentElement;pCvs.width=w.offsetWidth;pCvs.height=w.offsetHeight;pCtx=pCvs.getContext('2d');genPt();drawP();drawBW();}
+function genPt(){const t=TH[S.theme];ptcls=[];for(let i=0;i<200;i++)ptcls.push({x:Math.random()*pCvs.width,y:Math.random()*pCvs.height,vx:(Math.random()-.5)*.55,vy:(Math.random()-.5)*.55,r:Math.random()*2.2+.4,c:t.c[Math.floor(Math.random()*t.c.length)],a:Math.random()*.8+.2,p:Math.random()*Math.PI*2,sp:Math.random()*.02+.005});}
+function drawP(){if(!pCtx)return;const w=pCvs.width,h=pCvs.height,t=TH[S.theme];pT+=.008;pCtx.fillStyle='rgba('+h2r(t.bg)+',.08)';pCtx.fillRect(0,0,w,h);const cx=w/2,cy=h/2;for(let i=0;i<7;i++){const r=(i+1)*(Math.min(w,h)*.068)+Math.sin(pT*.7+i)*16;pCtx.beginPath();pCtx.arc(cx,cy,r,0,Math.PI*2);pCtx.strokeStyle='rgba('+h2r(t.c[i%3])+','+((.03+i*.013)*(S.pOn?1.4:.6))+')';pCtx.lineWidth=1.1;pCtx.stroke();}
+if(S.pOn){const gr2=65+Math.sin(pT*2)*14,grd=pCtx.createRadialGradient(cx,cy,0,cx,cy,gr2);grd.addColorStop(0,'rgba('+h2r(t.c[0])+',.16)');grd.addColorStop(1,'transparent');pCtx.beginPath();pCtx.arc(cx,cy,gr2,0,Math.PI*2);pCtx.fillStyle=grd;pCtx.fill();}
+for(let a=0;a<3;a++){pCtx.beginPath();for(let tt=0;tt<Math.PI*8;tt+=.05){const r2=tt*15,ang=tt+pT+(a*Math.PI*2/3),x2=cx+r2*Math.cos(ang),y2=cy+r2*Math.sin(ang);tt<.01?pCtx.moveTo(x2,y2):pCtx.lineTo(x2,y2);}pCtx.strokeStyle='rgba('+h2r(t.c[a])+',.065)';pCtx.lineWidth=1;pCtx.stroke();}
+ptcls.forEach(p=>{if(S.pOn){const dx=cx-p.x,dy=cy-p.y,dist=Math.sqrt(dx*dx+dy*dy)||1;p.vx+=dx/dist*.012;p.vy+=dy/dist*.012;}p.x+=p.vx;p.y+=p.vy;p.p+=p.sp;const aa=p.a*(.6+Math.sin(p.p)*.4);if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;pCtx.beginPath();pCtx.arc(p.x,p.y,p.r,0,Math.PI*2);pCtx.fillStyle=p.c+Math.floor(aa*255).toString(16).padStart(2,'0');pCtx.fill();});
+if(S.pOn)for(let i=0;i<ptcls.length;i+=3)for(let j=i+1;j<Math.min(i+8,ptcls.length);j++){const dx=ptcls[i].x-ptcls[j].x,dy=ptcls[i].y-ptcls[j].y,dd=Math.sqrt(dx*dx+dy*dy);if(dd<75){pCtx.beginPath();pCtx.moveTo(ptcls[i].x,ptcls[i].y);pCtx.lineTo(ptcls[j].x,ptcls[j].y);pCtx.strokeStyle='rgba('+h2r(t.c[0])+','+(1-dd/75)*.1+')';pCtx.lineWidth=.5;pCtx.stroke();}}
+requestAnimationFrame(drawP);}
+function drawBW(){const c=document.getElementById('bwc');if(!c)return;const x=c.getContext('2d'),w=c.width,h=c.height;x.clearRect(0,0,w,h);x.fillStyle='rgba(0,5,20,.72)';x.fillRect(0,0,w,h);if(an&&S.aOn){const d=new Uint8Array(an.frequencyBinCount);an.getByteTimeDomainData(d);x.beginPath();x.strokeStyle='rgba(0,245,255,.85)';x.lineWidth=1.5;for(let i=0;i<w;i++){const idx=Math.floor(i/w*d.length),y=d[idx]/255*h;i===0?x.moveTo(i,y):x.lineTo(i,y);}x.stroke();}else{x.beginPath();x.strokeStyle='rgba(0,245,255,.4)';x.lineWidth=1.5;for(let i=0;i<w;i++){const y=h/2+Math.sin(i*.14+pT*5)*9;i===0?x.moveTo(i,y):x.lineTo(i,y);}x.stroke();}requestAnimationFrame(drawBW);}
+function drawAV(){const c=document.getElementById('avc');if(!c){requestAnimationFrame(drawAV);return;}const x=c.getContext('2d'),w=c.width=c.offsetWidth,h=c.height=c.offsetHeight;x.clearRect(0,0,w,h);x.fillStyle='rgba(0,5,20,.9)';x.fillRect(0,0,w,h);if(an&&S.aOn){const d=new Uint8Array(an.frequencyBinCount);an.getByteFrequencyData(d);const bars=75,bw=w/bars-1;for(let i=0;i<bars;i++){const v=d[Math.floor(i/bars*d.length)]/255,bh=v*h*.88;x.fillStyle='hsla('+(180+i*2)+',100%,60%,'+(.7+v*.3)+')';x.fillRect(i*(bw+1),h-bh,bw,bh);}}else{const tt=Date.now()/1000;for(let i=0;i<75;i++){const v=(Math.sin(tt*2+i*.3)*.5+.5)*.25,bh=v*h*.8+3;x.fillStyle='rgba(0,245,255,'+v*.45+')';x.fillRect(i*(w/75),h-bh,w/75-1,bh);}}requestAnimationFrame(drawAV);}
+function togPortal(){S.pOn=!S.pOn;const btn=document.getElementById('ppbtn');if(btn)btn.textContent=S.pOn?'\u23F8':'\u25B6';if(S.pOn){if(!S.aOn)playP('theta');startST();startBreath();updD();toast('\uD83C\uDF00','\u09AA\u09CB\u09B0\u09CD\u099F\u09BE\u09B2 \u09B8\u0995\u09CD\u09B0\u09BF\u09AF\u09BC','\u09B8\u09C7\u09B6\u09A8 \u09B6\u09C1\u09B0\u09C1');}else{stopBreath();clearInterval(S.sIv);toast('\u23F8','\u09B8\u09C7\u09B6\u09A8 \u09AC\u09BF\u09B0\u09A4\u09BF','');}}
+function startST(){clearInterval(S.sIv);S.sTime=0;S.sIv=setInterval(()=>{S.sTime++;const el=document.getElementById('htimer');if(el)el.textContent=fmtT(S.sTime);},1000);}
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function updD(){let d=0;const iv=setInterval(()=>{if(!S.pOn){clearInterval(iv);return;}d=Math.min(100,d+Math.random()*2);const el=document.getElementById('hdepth');if(el)el.textContent=Math.round(d)+'%';},2800);}
+function togTheme(){const k=Object.keys(TH);S.theme=k[(k.indexOf(S.theme)+1)%k.length];const ts=document.getElementById('thsel');if(ts)ts.value=S.theme;genPt();}
+function setTheme(v){S.theme=v;genPt();}
+function togVR(){S.vrOn=!S.vrOn;const o=document.getElementById('vro');if(o)o.style.display=S.vrOn?'flex':'none';}
+function capShot(){if(!pCvs)return;const a=document.createElement('a');a.download='mydream-'+Date.now()+'.png';a.href=pCvs.toDataURL();a.click();toast('\uD83D\uDCF8','\u09B8\u09CD\u0995\u09CD\u09B0\u09BF\u09A8\u09B6\u099F \u09B8\u09C7\u09AD','');}
+function togBreath(){if(!brRun)startBreath();else stopBreath();}
+function startBreath(){if(brRun)return;brRun=true;runBC();}
+function stopBreath(){brRun=false;if(brTO)clearTimeout(brTO);const bph=document.getElementById('bph'),bcnt=document.getElementById('bcnt'),arc=document.getElementById('barc');if(bph)bph.textContent='TAP START';if(bcnt)bcnt.textContent='\u25CE';if(arc){arc.style.transition='stroke-dashoffset .3s';arc.style.strokeDashoffset='339';}}
+function runBC(){if(!brRun)return;const ph=[{n:'\u09B6\u09CD\u09AC\u09BE\u09B8 \u09A8\u09BF\u09A8',d:4},{n:'\u09A7\u09B0\u09C7 \u09B0\u09BE\u0996\u09C1\u09A8',d:7},{n:'\u09B6\u09CD\u09AC\u09BE\u09B8 \u099B\u09BE\u09A1\u09BC\u09C1\u09A8',d:8}];let pi=0;
+function nx(){if(!brRun)return;const p=ph[pi],arc=document.getElementById('barc'),bph=document.getElementById('bph'),bcnt=document.getElementById('bcnt');if(bph)bph.textContent=p.n;if(arc){arc.style.transition='stroke-dashoffset '+p.d+'s linear';arc.style.strokeDashoffset=(p.n==='\u09B6\u09CD\u09AC\u09BE\u09B8 \u09A8\u09BF\u09A8')?'0':'339';}let t=p.d;const iv=setInterval(()=>{if(!brRun){clearInterval(iv);return;}if(bcnt)bcnt.textContent=t--;if(t<0)clearInterval(iv);},1000);brTO=setTimeout(()=>{pi=(pi+1)%ph.length;nx();},p.d*1000);}nx();}
+function loadD(){try{S.dreams=JSON.parse(localStorage.getItem('md_d')||'[]');}catch(e){S.dreams=[];}renderDL();updStats();}
+function saveD(){localStorage.setItem('md_d',JSON.stringify(S.dreams));updStats();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderDL(f){f=f||'';const el=document.getElementById('dlist');if(!el)return;const list=f?S.dreams.filter(d=>d.title.toLowerCase().includes(f.toLowerCase())||d.content.toLowerCase().includes(f.toLowerCase())):S.dreams;if(!list.length){el.innerHTML='<div style="text-align:center;padding:28px;color:var(--tm)">\uD83C\uDF19 \u0995\u09CB\u09A8\u09CB \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09A8\u09C7\u0987</div>';return;}el.innerHTML=[...list].reverse().map(d=>'<div class="dc '+(S.curD&&S.curD.id===d.id?'sel':'')+'" onclick="selD(\''+d.id+'\')">'+'<div class="dcd">'+new Date(d.date).toLocaleDateString('bn-BD',{day:'numeric',month:'long'})+'</div><div class="dct">'+esc(d.title||'\u0985\u099C\u09BE\u09A8\u09BE')+'</div><div class="dcp">'+esc((d.content||'').substring(0,90))+'...</div><div class="dcm">'+(d.lucid?'<span class="bdg bc">\u09B2\u09C1\u09B8\u09BF\u09A1</span>':'')+(d.clarity?'<span class="bdg bp2">'+d.clarity+'\u2605</span>':'')+'</div></div>').join('');}
+function filterD(q){renderDL(q);}
+function selD(id){S.curD=S.dreams.find(d=>d.id===id);if(!S.curD)return;renderDL((document.getElementById('dsrch')||{}).value||'');showDD(S.curD);}
+function showDD(d){const dfst=document.getElementById('dfst'),dfc=document.getElementById('dfc');if(dfst)dfst.textContent='\uD83D\uDCD6 \u09AC\u09BF\u09B8\u09CD\u09A4\u09BE\u09B0\u09BF\u09A4';if(dfc)dfc.innerHTML='<div style="margin-bottom:14px"><div style="font-family:Orbitron,monospace;font-size:.95rem;color:var(--tp);margin-bottom:3px">'+esc(d.title||'\u09B6\u09BF\u09B0\u09CB\u09A8\u09BE\u09AE\u09B9\u09C0\u09A8')+'</div><div style="font-size:.65rem;color:var(--tm)">'+new Date(d.date).toLocaleString('bn-BD')+'</div></div><div style="font-size:.86rem;color:var(--ts);line-height:1.8;margin-bottom:13px;white-space:pre-wrap">'+esc(d.content||'')+'</div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px">'+(d.lucid?'<span class="bdg bc">\u2728 \u09B2\u09C1\u09B8\u09BF\u09A1</span>':'')+(d.clarity?'<span class="bdg bp2">\u09B8\u09CD\u09AA\u09B7\u09CD\u099F\u09A4\u09BE '+d.clarity+'/5</span>':'')+(d.emotions||[]).map(e=>'<span class="bdg bg3">'+e+'</span>').join('')+(d.symbols||[]).map(s=>'<span class="bdg bpk">'+s+'</span>').join('')+'</div>'+(d.analysis?'<div class="abl"><h4>\uD83E\uDDE0 AI \u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3</h4><div class="atxt">'+esc(d.analysis)+'</div></div>':'')+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px"><button class="btn bp" onclick="editD(\''+d.id+'\')">\u270F\uFE0F \u09B8\u09AE\u09CD\u09AA\u09BE\u09A6\u09A8\u09BE</button><button class="btn bs" onclick="analyzeD(\''+d.id+'\')">\uD83E\uDDE0 \u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3</button><button class="btn bd" onclick="delD(\''+d.id+'\')">\uD83D\uDDD1\uFE0F \u09AE\u09C1\u099B\u09C1\u09A8</button></div>';}
+function newEntry(){S.curD=null;S.clarity=null;S.emos=[];S.syms=[];const dfst=document.getElementById('dfst'),dfc=document.getElementById('dfc');if(dfst)dfst.textContent='+ \u09A8\u09A4\u09C1\u09A8 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8';if(dfc)dfc.innerHTML=dForm();}
+function editD(id){S.curD=S.dreams.find(d=>d.id===id);if(!S.curD)return;S.clarity=S.curD.clarity||null;S.emos=[...(S.curD.emotions||[])];S.syms=[...(S.curD.symbols||[])];const dfc=document.getElementById('dfc');if(dfc)dfc.innerHTML=dForm(S.curD);}
+function dForm(d){d=d||{};return'<div class="fg"><label>\u09B6\u09BF\u09B0\u09CB\u09A8\u09BE\u09AE</label><input type="text" id="dt" value="'+esc(d.title||'')+'" placeholder="\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7\u09B0 \u09A8\u09BE\u09AE..."></div><div class="fg"><label>\u09AC\u09BF\u09AC\u09B0\u09A3</label><textarea id="dc2" placeholder="\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09AC\u09BF\u09B8\u09CD\u09A4\u09BE\u09B0\u09BF\u09A4 \u09B2\u09BF\u0996\u09C1\u09A8...">'+esc(d.content||'')+'</textarea></div><div class="frow"><div class="fg"><label>\u09A4\u09BE\u09B0\u09BF\u0996</label><input type="date" id="dd" value="'+(d.date?d.date.split("T")[0]:new Date().toISOString().split("T")[0])+'"></div><div class="fg"><label>\u0998\u09C1\u09AE\u09C7\u09B0 \u09B8\u09AE\u09AF\u09BC</label><input type="text" id="dsd" value="'+esc(d.sleepDur||'')+'" placeholder="\u09AF\u09C7\u09AE\u09A8: 7 \u0998\u09A3\u09CD\u099F\u09BE"></div></div><div class="fg"><label>\u09B8\u09CD\u09AA\u09B7\u09CD\u099F\u09A4\u09BE</label><div class="cbar">'+[1,2,3,4,5].map(v=>'<div class="cb '+((S.clarity||0)>=v?'s':'')+'" data-v="'+v+'" onclick="setCl('+v+')">'+v+'\u2605</div>').join('')+'</div></div><div class="fg"><label>\u0986\u09AC\u09C7\u0997</label><div class="egrid">'+['\uD83D\uDE0A','\uD83D\uDE28','\uD83D\uDE21','\uD83D\uDE22','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE30','\uD83E\uDD70','\uD83D\uDE0C','\uD83E\uDD14','\uD83D\uDE31','\uD83C\uDF1F'].map(e=>'<div class="eb '+(S.emos.includes(e)?'s':'')+'" onclick="tE(this,\''+e+'\')">'+e+'</div>').join('')+'</div></div><div class="fg"><label>\u09AA\u09CD\u09B0\u09A4\u09C0\u0995</label><div class="sgrid">'+['\uD83C\uDF0A','\uD83D\uDD25','\uD83D\uDCA7','\uD83C\uDF19','\u2B50','\uD83E\uDD8B','\uD83D\uDC0D','\uD83C\uDF38','\uD83C\uDFE0','\uD83D\uDE80','\uD83D\uDD0F','\uD83D\uDC41\uFE0F','\uD83C\uDF32','\uD83E\uDD85','\uD83C\uDFAD','\uD83C\uDF08'].map(s=>'<div class="sb '+(S.syms.includes(s)?'s':'')+'" onclick="tS(this,\''+s+'\')">'+s+'</div>').join('')+'</div></div><div class="frow"><div class="fg"><label>\u09AE\u09C7\u099C\u09BE\u099C</label><input type="text" id="dm" value="'+esc(d.mood||'')+'" placeholder="\u09B8\u09C1\u0996\u09C0, \u09B0\u09CB\u09AE\u09BE\u0982\u099A\u0995\u09B0..."></div><div class="fg"><label>\u09B2\u09C1\u09B8\u09BF\u09A1?</label><label class="tg" style="margin-top:7px"><input type="checkbox" id="dluc" '+(d.lucid?'checked':'')+"><span class='sl'></span></label></div></div><div style='display:flex;gap:8px;flex-wrap:wrap;margin-top:4px'><button class='btn bp' onclick='saveDE()'>\uD83D\uDCBE \u09B8\u09C7\u09AD</button><button class='btn bg2' onclick='newEntry()'>\uD83D\uDDD1 \u09AA\u09B0\u09BF\u09B7\u09CD\u0995\u09BE\u09B0</button></div>";}
+function setCl(v){S.clarity=v;document.querySelectorAll('.cb').forEach(b=>b.classList.toggle('s',parseInt(b.dataset.v)<=v));}
+function tE(el,e){el.classList.toggle('s');const i=S.emos.indexOf(e);i>-1?S.emos.splice(i,1):S.emos.push(e);}
+function tS(el,s){el.classList.toggle('s');const i=S.syms.indexOf(s);i>-1?S.syms.splice(i,1):S.syms.push(s);}
+function saveDE(){const c=(document.getElementById('dc2')||{}).value||'';if(!c.trim()){toast('\u26A0\uFE0F','\u09AC\u09BF\u09AC\u09B0\u09A3 \u09B2\u09BF\u0996\u09C1\u09A8','');return;}const dr={id:S.curD&&S.curD.id||'dr_'+Date.now(),title:(document.getElementById('dt')||{}).value||'\u0985\u099C\u09BE\u09A8\u09BE',content:c,date:((document.getElementById('dd')||{}).value||new Date().toISOString().split('T')[0])+'T'+new Date().toTimeString().slice(0,8),sleepDur:(document.getElementById('dsd')||{}).value||'',clarity:S.clarity,emotions:[...S.emos],symbols:[...S.syms],mood:(document.getElementById('dm')||{}).value||'',lucid:((document.getElementById('dluc')||{}).checked)||false,analysis:S.curD&&S.curD.analysis||''};if(S.curD){const i=S.dreams.findIndex(d=>d.id===dr.id);if(i>-1)S.dreams[i]=dr;}else S.dreams.push(dr);saveD();S.curD=dr;renderDL();showDD(dr);updRecent();toast('\u2705','\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09B8\u09C7\u09AD',dr.title);if(navigator.vibrate)navigator.vibrate(80);}
+function delD(id){if(!confirm('\u09AE\u09C1\u099B\u09AC\u09C7\u09A8?'))return;S.dreams=S.dreams.filter(d=>d.id!==id);saveD();S.curD=null;renderDL();const dfc=document.getElementById('dfc');if(dfc)dfc.innerHTML='<div class="de"><div>\uD83D\uDDD1\uFE0F \u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE</div><button class="btn bp" onclick="newEntry()">+ \u09A8\u09A4\u09C1\u09A8</button></div>';toast('\uD83D\uDDD1\uFE0F','\u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09AF\u09BC\u09C7\u099B\u09C7','');}
+function analyzeD(id){const d=S.dreams.find(dr=>dr.id===id);if(!d)return;const sm={'\uD83C\uDF0A':'\u0985\u099A\u09C7\u09A4\u09A8 \u09AE\u09A8\u09C7\u09B0 \u0997\u09AD\u09C0\u09B0\u09A4\u09BE','\uD83D\uDD25':'\u09B0\u09C2\u09AA\u09BE\u09A8\u09CD\u09A4\u09B0 \u0993 \u0987\u099A\u09CD\u099B\u09BE\u09B6\u0995\u09CD\u09A4\u09BF','\uD83C\uDF19':'\u0985\u09A8\u09CD\u09A4\u09B0\u099C\u09C0\u09AC\u09A8 \u0993 \u09AA\u09B0\u09BF\u09AC\u09B0\u09CD\u09A4\u09A8','\u2B50':'\u0986\u09B6\u09BE \u0993 \u09B2\u0995\u09CD\u09B7\u09CD\u09AF','\uD83E\uDD8B':'\u09B0\u09C2\u09AA\u09BE\u09A8\u09CD\u09A4\u09B0 \u0993 \u09AE\u09C1\u0995\u09CD\u09A4\u09BF','\uD83D\uDC0D':'\u099C\u09CD\u099E\u09BE\u09A8 \u0993 \u09A8\u09BF\u09B0\u09BE\u09AE\u09AF\u09BC','\uD83C\uDFE0':'\u09A8\u09BF\u099C\u09C7\u09B0 \u09B8\u09A4\u09CD\u09A4\u09BE','\uD83D\uDE80':'\u0989\u099A\u09CD\u099A\u09BE\u0995\u09BE\u0999\u09CD\u0995\u09CD\u09B7\u09BE','\uD83D\uDD0F':'\u09B8\u09AE\u09BE\u09A7\u09BE\u09A8 \u0996\u09CB\u0981\u099C\u09BE','\uD83D\uDC41\uFE0F':'\u09B8\u099A\u09C7\u09A4\u09A8\u09A4\u09BE \u0993 \u09B8\u09A4\u09CD\u09AF'};let a='\u09B8\u09BE\u0987\u0995\u09CB\u09B2\u099C\u09BF\u0995\u09CD\u09AF\u09BE\u09B2 \u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3 (Jung/Freud)\n\n';if(d.symbols&&d.symbols.length){a+='\u09AA\u09CD\u09B0\u09A4\u09C0\u0995 \u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3:\n';d.symbols.forEach(s=>{if(sm[s])a+='\u2022 '+s+': '+sm[s]+'\n';});a+='\n';}if(d.emotions&&d.emotions.length)a+='\u0986\u09AC\u09C7\u0997\u09C0\u09AF\u09BC \u0985\u09AC\u09B8\u09CD\u09A5\u09BE: '+d.emotions.join(' ')+' \u2014 \u09AC\u09B0\u09CD\u09A4\u09AE\u09BE\u09A8 \u099C\u09C0\u09AC\u09A8\u09C7\u09B0 \u09AA\u09CD\u09B0\u09A4\u09BF\u09AB\u09B2\u09A8\u0964\n\n';if(d.lucid)a+='\u2728 \u09B2\u09C1\u09B8\u09BF\u09A1 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8: \u09AA\u09CD\u09B0\u09BF\u09AB\u09CD\u09B0\u09A8\u09CD\u099F\u09BE\u09B2 \u0995\u09B0\u09CD\u099F\u09C7\u0995\u09CD\u09B8 \u09B8\u0995\u09CD\u09B0\u09BF\u09AF\u09BC\u0964\n\n';if(d.clarity>=4)a+='\u2B50 \u0989\u099A\u09CD\u099A \u09B8\u09CD\u09AA\u09B7\u09CD\u099F\u09A4\u09BE ('+d.clarity+'/5): \u0997\u09AD\u09C0\u09B0 REM \u09AA\u09B0\u09CD\u09AF\u09BE\u09AF\u09BC\u0964';d.analysis=a;saveD();showDD(d);toast('\uD83E\uDDE0','\u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8','');}
+function analyzeAll(){if(S.dreams.length<2){toast('\u2139\uFE0F','\u09A1\u09C7\u099F\u09BE \u0995\u09AE','\u0995\u09AE\u09AA\u0995\u09CD\u09B7\u09C7 \u09E8\u099F\u09BF \u09A6\u09B0\u0995\u09BE\u09B0');return;}updIns();toast('\uD83E\uDDE0','\u09AC\u09BF\u09B6\u09CD\u09B2\u09C7\u09B7\u09A3 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8','');}
+function expD(){const data=JSON.stringify({dreams:S.dreams,date:new Date().toISOString()},null,2);const b=new Blob([data],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='mydream-'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(u);toast('\uD83D\uDCE4','Export \u09B8\u09AB\u09B2',S.dreams.length+'\u099F\u09BF \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8');}
+function impD(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.dreams){S.dreams=[...S.dreams,...d.dreams];saveD();renderDL();updRecent();toast('\uD83D\uDCE5','Import \u09B8\u09AB\u09B2',d.dreams.length+'\u099F\u09BF');}}catch(e2){toast('\u274C','Import \u09AC\u09CD\u09AF\u09B0\u09CD\u09A5','');}};r.readAsText(f);};inp.click();}
+function updStats(){const tot=S.dreams.length,luc=S.dreams.filter(d=>d.lucid).length,stk=calcStk(),sc=tot?Math.round(luc/tot*100):0;[['s-tot','a-tot',tot],['s-luc','a-luc',luc],['s-stk','a-stk',stk]].forEach(([a,b,v])=>{[a,b].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});});const se=document.getElementById('s-scr');if(se)se.textContent=sc+'%';const ae=document.getElementById('a-avg');if(ae){const avg=tot?(S.dreams.reduce((s,d)=>s+(d.clarity||0),0)/tot).toFixed(1):'—';ae.textContent=avg;}updDial(sc);updRecent();}
+function calcStk(){if(!S.dreams.length)return 0;const dates=[...new Set(S.dreams.map(d=>d.date&&d.date.split('T')[0]))].filter(Boolean).sort().reverse();let stk=0,cur=new Date();cur.setHours(0,0,0,0);for(const d of dates){const dd=new Date(d);dd.setHours(0,0,0,0);const diff=(cur-dd)/864e5;if(diff<=stk+1){stk++;cur=dd;}else break;}return stk;}
+function updDial(sc){const arc=document.getElementById('darc'),val=document.getElementById('dval');if(!arc||!val)return;arc.style.strokeDashoffset=216-(sc/100*216);val.textContent=sc+'%';}
+function updRecent(){const el=document.getElementById('rdl');if(!el)return;const r=[...S.dreams].reverse().slice(0,3);if(!r.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--tm)">\uD83C\uDF19 \u098F\u0996\u09A8\u09CB \u0995\u09CB\u09A8\u09CB \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09A8\u09C7\u0987</div>';return;}el.innerHTML=r.map(d=>'<div class="dc" onclick="gp(\'journal\');selD(\''+d.id+'\')" style="cursor:pointer"><div class="dcd">'+new Date(d.date).toLocaleDateString('bn-BD',{day:'numeric',month:'short'})+'</div><div class="dct">'+esc(d.title||'\u0985\u099C\u09BE\u09A8\u09BE')+'</div><div class="dcp">'+esc((d.content||'').substring(0,70))+'...</div><div class="dcm">'+(d.lucid?'<span class="bdg bc">\u09B2\u09C1\u09B8\u09BF\u09A1</span>':'')+(d.clarity?'<span class="bdg bp2">'+d.clarity+'\u2605</span>':'')+'</div></div>').join('');}
+function drawANC(){const c=document.getElementById('anvc');if(!c)return;const x=c.getContext('2d'),w=c.width=c.offsetWidth,h=c.height=210;x.clearRect(0,0,w,h);x.fillStyle='rgba(0,5,20,.85)';x.fillRect(0,0,w,h);const days=30,data=Array.from({length:days},(a,i)=>{const dd=new Date();dd.setDate(dd.getDate()-i);const ds=dd.toISOString().split('T')[0];const ds2=S.dreams.filter(d=>d.date&&d.date.startsWith(ds));return ds2.length?(ds2.filter(d=>d.lucid).length/ds2.length*100):null;}).reverse();const bw=(w-45)/days;for(let i=0;i<=4;i++){const y=h*.1+(h*.8/4)*i;x.beginPath();x.moveTo(40,y);x.lineTo(w-8,y);x.strokeStyle='rgba(0,245,255,.06)';x.lineWidth=1;x.stroke();x.fillStyle='rgba(0,245,255,.3)';x.font='10px monospace';x.fillText((4-i)*25+'%',2,y+4);}data.forEach((v,i)=>{if(v===null)return;const bh=(v/100)*(h*.75),bx=40+i*bw+bw*.1,by=h-bh-h*.1;const g=x.createLinearGradient(0,by,0,h*.9);g.addColorStop(0,'rgba(0,245,255,.85)');g.addColorStop(1,'rgba(157,0,255,.4)');x.fillStyle=g;x.fillRect(bx,by,bw*.8,bh);});x.beginPath();let first=true;data.forEach((v,i)=>{if(v===null)return;const px=40+i*bw+bw/2,py=h-(v/100)*(h*.75)-h*.1;if(first){x.moveTo(px,py);first=false;}else x.lineTo(px,py);});x.strokeStyle='rgba(0,245,255,.55)';x.lineWidth=2;x.stroke();}
+function drawHM(){const el=document.getElementById('hmw');if(!el)return;el.innerHTML=Array.from({length:63},(a,i)=>{const d=new Date();d.setDate(d.getDate()-62+i);const ds=d.toISOString().split('T')[0];const cnt=S.dreams.filter(dr=>dr.date&&dr.date.startsWith(ds)).length;const bg=cnt===0?'rgba(0,245,255,.04)':cnt===1?'rgba(0,245,255,.15)':cnt===2?'rgba(0,245,255,.3)':cnt===3?'rgba(0,245,255,.5)':'rgba(0,245,255,.8)';return'<div style="aspect-ratio:1;border-radius:4px;background:'+bg+';border:1px solid rgba(255,255,255,.04)" title="'+ds+': '+cnt+'"></div>';}).join('');}
+function drawTC(){const c=document.getElementById('thmc');if(!c||!S.dreams.length)return;const x=c.getContext('2d'),w=c.width=c.offsetWidth,h=210;c.height=h;x.clearRect(0,0,w,h);x.fillStyle='rgba(0,5,20,.85)';x.fillRect(0,0,w,h);const sc={};S.dreams.forEach(d=>(d.symbols||[]).forEach(s=>{sc[s]=(sc[s]||0)+1;}));const ent=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,6);if(!ent.length){x.fillStyle='rgba(0,245,255,.3)';x.font='12px sans-serif';x.fillText('\u09AA\u09CD\u09B0\u09A4\u09C0\u0995 \u09A8\u09C7\u0987',20,h/2);return;}const tot=ent.reduce((s,e)=>s+e[1],0),cols=['#00f5ff','#9d00ff','#ff006e','#ffd700','#00ff88','#0066ff'];let ang=-Math.PI/2;const cx=w*.4,cy=h/2,r=Math.min(cx,cy)*.72;ent.forEach(([sym,cnt],i)=>{const sl=(cnt/tot)*Math.PI*2;x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,r,ang,ang+sl);x.closePath();x.fillStyle=cols[i];x.fill();x.strokeStyle='rgba(0,5,20,.6)';x.lineWidth=2;x.stroke();const mid=ang+sl/2;x.font='14px Arial';x.fillText(sym,cx+Math.cos(mid)*(r*.63)-7,cy+Math.sin(mid)*(r*.63)+6);ang+=sl;});ent.forEach(([sym,cnt],i)=>{x.fillStyle=cols[i];x.fillRect(w*.72,18+i*28,11,11);x.fillStyle='rgba(200,230,255,.7)';x.font='11px sans-serif';x.fillText(sym+' '+Math.round(cnt/tot*100)+'%',w*.72+15,18+i*28+10);});}
+function updIns(){const el=document.getElementById('inslist');if(!el||S.dreams.length<2)return;const lr=(S.dreams.filter(d=>d.lucid).length/S.dreams.length*100).toFixed(0),avg=(S.dreams.reduce((s,d)=>s+(d.clarity||0),0)/S.dreams.length).toFixed(1);el.innerHTML='<div class="insc"><div style="font-size:1.4rem;flex-shrink:0">\uD83D\uDCCA</div><div style="flex:1;font-size:.82rem;color:var(--ts);line-height:1.6"><div style="font-family:Orbitron,monospace;font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:3px">LUCIDITY RATE</div>\u09B2\u09C1\u09B8\u09BF\u09A1 \u09B9\u09BE\u09B0 <strong style="color:var(--c1)">'+lr+'%</strong>\u0964 \u09A8\u09BF\u09AF\u09BC\u09AE\u09BF\u09A4 \u0985\u09A8\u09C1\u09B6\u09C0\u09B2\u09A8\u09C7 50%+ \u09B8\u09AE\u09CD\u09AD\u09AC\u0964</div></div><div class="insc" style="margin-top:8px"><div style="font-size:1.4rem;flex-shrink:0">\u2B50</div><div style="flex:1;font-size:.82rem;color:var(--ts);line-height:1.6"><div style="font-family:Orbitron,monospace;font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:3px">CLARITY</div>\u0997\u09A1\u09BC \u09B8\u09CD\u09AA\u09B7\u09CD\u099F\u09A4\u09BE <strong style="color:var(--c4)">'+avg+'/5</strong>\u0964 \u0989\u099A\u09CD\u099A = \u0997\u09AD\u09C0\u09B0 REM\u0964</div></div><div class="insc" style="margin-top:8px"><div style="font-size:1.4rem;flex-shrink:0">\uD83E\uDDE0</div><div style="flex:1;font-size:.82rem;color:var(--ts);line-height:1.6"><div style="font-family:Orbitron,monospace;font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:3px">STREAK</div>'+calcStk()+' \u09A6\u09BF\u09A8\u09C7\u09B0 \u09A7\u09BE\u09B0\u09BE\u09AC\u09BE\u09B9\u09BF\u0995\u09A4\u09BE\u0964 \u09E8\u09E7 \u09A6\u09BF\u09A8\u09C7 \u09B8\u09CD\u09A5\u09BE\u09AF\u09BC\u09C0 \u09A8\u09BF\u0989\u09B0\u09BE\u09B2 \u09AA\u09BE\u09A5\u0993\u09AF\u09BC\u09C7 \u09A4\u09C8\u09B0\u09BF\u0964</div></div>';}
+function initLC(){lCvs=document.getElementById('lc');if(!lCvs)return;lCtx=lCvs.getContext('2d');lCvs.width=lCvs.offsetWidth;lCvs.height=230;drawLC();}
+function drawLC(){if(!lCtx)return;const w=lCvs.width,h=lCvs.height,t=Date.now()/1000;let a=lBr/100;if(lFk>0&&S.lOn)a*=(Math.sin(t*lFk*Math.PI*2)>0)?1:.05;lCtx.clearRect(0,0,w,h);const r=parseInt(lColor.slice(1,3),16),g=parseInt(lColor.slice(3,5),16),b=parseInt(lColor.slice(5,7),16);lCtx.fillStyle='rgba('+r+','+g+','+b+','+(a*.88+.04)+')';lCtx.fillRect(0,0,w,h);const grd=lCtx.createRadialGradient(w/2,h/2,8,w/2,h/2,Math.min(w,h)*.58);grd.addColorStop(0,'rgba(255,255,255,'+(a*.22)+')');grd.addColorStop(1,'transparent');lCtx.fillStyle=grd;lCtx.fillRect(0,0,w,h);const li=document.getElementById('linfo');if(li)li.textContent=S.lOn?lBr+'% \u0989\u099C\u09CD\u099C\u09CD\u09AC\u09B2\u09A4\u09BE'+(lFk>0?' \u2022 '+lFk+'Hz':''): '\u0995\u09CD\u09B2\u09BF\u0995 \u0995\u09B0\u09C1\u09A8 \u09A5\u09C7\u09B0\u09BE\u09AA\u09BF \u09B6\u09C1\u09B0\u09C1 \u0995\u09B0\u09A4\u09C7';requestAnimationFrame(drawLC);}
+function startLT(){S.lOn=true;toast('\uD83D\uDCA1','\u09B2\u09BE\u0987\u099F \u09A5\u09C7\u09B0\u09BE\u09AA\u09BF \u09B6\u09C1\u09B0\u09C1',lBr+'%');}
+function stopLT(){S.lOn=false;toast('\u23F9','\u09A5\u09C7\u09B0\u09BE\u09AA\u09BF \u09AC\u09A8\u09CD\u09A7','');}
+function setLC(el){document.querySelectorAll('.cpi').forEach(c=>c.classList.remove('s'));el.classList.add('s');lColor=el.dataset.c;}
+const LP={morning:{c:'#ffffff',b:90,f:0},dream:{c:'#1a0a4a',b:30,f:.5},relax:{c:'#440022',b:50,f:0},gamma:{c:'#002244',b:70,f:40},ld:{c:'#110044',b:40,f:.2}};
+function setLP(n){const p=LP[n];if(!p)return;lColor=p.c;lBr=p.b;lFk=p.f;const lb=document.getElementById('lbr'),lbv=document.getElementById('lbrv'),lf=document.getElementById('lfk'),lfv=document.getElementById('lfkv');if(lb)lb.value=p.b;if(lbv)lbv.textContent=p.b;if(lf)lf.value=p.f;if(lfv)lfv.textContent=p.f;S.lOn=true;toast('\uD83D\uDCA1',n+' \u09AA\u09CD\u09B0\u09BF\u09B8\u09C7\u099F','');}
+const RCL=[{i:'\u270B',t:'\u09B9\u09BE\u09A4 \u09A6\u09C7\u0996\u09C1\u09A8',d:'\u0986\u0999\u09CD\u0997\u09C1\u09B2 \u0997\u09A3\u09A8\u09BE \u0995\u09B0\u09C1\u09A8\u0964 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09EC+ \u0986\u0999\u09CD\u0997\u09C1\u09B2!'},{i:'\uD83D\uDC43',t:'\u09A8\u09BE\u0995 \u099A\u09C7\u09AA\u09C7 \u09B6\u09CD\u09AC\u09BE\u09B8',d:'\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09A8\u09BE\u0995 \u099A\u09C7\u09AA\u09C7\u0993 \u09B6\u09CD\u09AC\u09BE\u09B8 \u09A8\u09C7\u0993\u09AF\u09BC\u09BE \u09AF\u09BE\u09AF\u09BC!'},{i:'\uD83D\uDCD6',t:'\u09B2\u09C7\u0996\u09BE \u09AA\u09A1\u09BC\u09C1\u09A8',d:'\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09B2\u09C7\u0996\u09BE \u09AA\u09B0\u09BF\u09AC\u09B0\u09CD\u09A4\u09A8 \u09B9\u09AF\u09BC\u0964'},{i:'\uD83E\uDD85',t:'\u09B2\u09BE\u09AB \u09A6\u09BF\u09A8',d:'\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u0989\u09A1\u09BC\u09A4\u09C7 \u09AA\u09BE\u09B0\u09AC\u09C7\u09A8!'},{i:'\u23F1\uFE0F',t:'\u09B8\u09AE\u09AF\u09BC \u09A6\u09C7\u0996\u09C1\u09A8',d:'\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09B8\u09AE\u09AF\u09BC \u09AC\u09A6\u09B2\u09BE\u09AF\u09BC\u0964'}];
+function doRC(){const rc=RCL[Math.floor(Math.random()*RCL.length)];const ri=document.getElementById('rcmi'),rt=document.getElementById('rcmt'),rd=document.getElementById('rcmd');if(ri)ri.textContent=rc.i;if(rt)rt.textContent=rc.t;if(rd)rd.textContent=rc.d;omo('rcmo');}
+function rcAnim(el){el.style.transform='scale(.9)';el.style.borderColor='var(--c1)';setTimeout(()=>{el.style.transform='';el.style.borderColor='';},280);S.rcCnt++;const rc=document.getElementById('rcc');if(rc)rc.textContent=S.rcCnt;doRC();if(navigator.vibrate)navigator.vibrate([50,30,50]);}
+function confRC(aware){cmo('rcmo');S.rcCnt++;const rc=document.getElementById('rcc');if(rc)rc.textContent=S.rcCnt;toast(aware?'\u2705':'\uD83D\uDE34',aware?'\u09B8\u099A\u09C7\u09A4\u09A8!':'\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7!','\u09B0\u09BF\u09AF\u09BC\u09C7\u09B2\u09BF\u099F\u09BF \u099A\u09C7\u0995 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8');}
+function setRCRem(){if('Notification' in window&&Notification.permission==='granted'){setInterval(()=>new Notification('MyDream \u270B',{body:'\u09B9\u09BE\u09A4\u09C7\u09B0 \u09A6\u09BF\u0995\u09C7 \u09A4\u09BE\u0995\u09BE\u09A8 \u2014 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u0986\u099B\u09C7\u09A8?'}),3600000);toast('\u23F0','\u09B0\u09BF\u09AE\u09BE\u0987\u09A8\u09CD\u09A1\u09BE\u09B0 \u09B8\u09C7\u099F','\u09AA\u09CD\u09B0\u09A4\u09BF \u0998\u09A3\u09CD\u099F\u09BE\u09AF\u09BC');}else reqN();}
+function startWBTB(){clearInterval(S.wIv);const st=(document.getElementById('slt')||{}).value||'23:00',hrs=parseFloat((document.getElementById('wbtbh')||{}).value||5);const[sh,sm]=st.split(':').map(Number);const wd=new Date();wd.setHours(sh,sm,0,0);if(wd<new Date())wd.setDate(wd.getDate()+1);wd.setTime(wd.getTime()+hrs*3600000);const wt=document.getElementById('wbtbwt');if(wt)wt.textContent=String(wd.getHours()).padStart(2,'0')+':'+String(wd.getMinutes()).padStart(2,'0');S.wIv=setInterval(()=>{const diff=wd-new Date();const el=document.getElementById('wbtbcd');if(diff<=0){clearInterval(S.wIv);if(el)el.textContent='\u099C\u09BE\u0997\u09C1\u09A8!';if('Notification' in window&&Notification.permission==='granted')new Notification('\uD83C\uDF19 WBTB',{body:'\u0989\u09A0\u09C1\u09A8! \u09E9\u09E6 \u09AE\u09BF\u09A8\u09BF\u099F \u099C\u09BE\u0997\u09C1\u09A8\u0964'});if(navigator.vibrate)navigator.vibrate([500,200,500,200,500]);toast('\u23F0','WBTB \u09B8\u09AE\u09AF\u09BC!','\u0989\u09A0\u09C1\u09A8, \u09E9\u09E6 \u09AE\u09BF\u09A8\u09BF\u099F \u099C\u09BE\u0997\u09C1\u09A8');return;}const h2=Math.floor(diff/3600000),m2=Math.floor((diff%3600000)/60000),s2=Math.floor((diff%60000)/1000);if(el)el.textContent=h2+':'+String(m2).padStart(2,'0')+':'+String(s2).padStart(2,'0');},1000);toast('\u23F0','WBTB \u09B6\u09C1\u09B0\u09C1','');}
+function stopWBTB(){clearInterval(S.wIv);const el=document.getElementById('wbtbcd');if(el)el.textContent='\u2014:\u2014';}
+const TECHS={mild:{n:'MILD \u2014 \u09AE\u09A8\u09C7\u09AE\u09CB\u09A8\u09BF\u0995 \u0987\u09A8\u09A1\u09BE\u0995\u09B6\u09A8',s:['\u09E7. \u0998\u09C1\u09AE\u09BE\u09A8\u09CB\u09B0 \u0986\u0997\u09C7 Theta \u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2 + \u09AE\u09C7\u09A1\u09BF\u099F\u09C7\u09B6\u09A8','\u09E8. \u09AC\u09BE\u09B0\u09AC\u09BE\u09B0 \u09AC\u09B2\u09C1\u09A8: "\u0986\u09AE\u09BF \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09B8\u099A\u09C7\u09A4\u09A8 \u09A5\u09BE\u0995\u09AC"','\u09E9. \u09B6\u09C7\u09B7 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u099F\u09BF \u09AE\u09A8\u09C7 \u0995\u09B0\u09C1\u09A8','\u09EA. \u09B8\u09C7\u0987 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09B8\u099A\u09C7\u09A4\u09A8 \u09A6\u09C7\u0996\u09C1\u09A8','\u09EB. WBTB \u098F\u09B0 \u09B8\u09BE\u09A5\u09C7 \u09E9\u09E6\u09E6% \u09AC\u09C7\u09B6\u09BF \u0995\u09BE\u09B0\u09CD\u09AF\u0995\u09B0'],sci:'\u0997\u09AC\u09C7\u09B7\u09A3\u09BE\u09AF\u09BC MILD \u09A4\u09C7 \u09E7 \u09AE\u09BE\u09B8\u09C7 79% \u09B8\u09BE\u09AB\u09B2\u09CD\u09AF\u0964'},wild:{n:'WILD \u2014 \u099C\u09BE\u0997\u09CD\u09B0\u09A4 \u09A5\u09C7\u0995\u09C7 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7',s:['\u09E7. WBTB \u098F\u09B0 \u09AA\u09B0 \u09B6\u09C1\u09AF\u09BC\u09C7 \u09AA\u09A1\u09BC\u09C1\u09A8','\u09E8. \u09B6\u09B0\u09C0\u09B0 \u09B6\u09BF\u09A5\u09BF\u09B2 \u0995\u09B0\u09C1\u09A8','\u09E9. Theta \u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2 \u099A\u09BE\u09B2\u09C1','\u09EA. \u099A\u09CB\u0996\u09C7\u09B0 \u09AA\u09BE\u09A4\u09BE\u09AF\u09BC \u0986\u09B2\u09CB-\u09AA\u09CD\u09AF\u09BE\u099F\u09BE\u09B0\u09CD\u09A8 \u09A6\u09C7\u0996\u09C1\u09A8','\u09EB. \u09B8\u09CD\u09B2\u09BF\u09AA \u09AA\u09CD\u09AF\u09BE\u09B0\u09BE\u09B2\u09BE\u0987\u09B8\u09BF\u09B8 \u09B8\u09CD\u09AC\u09BE\u09AD\u09BE\u09AC\u09BF\u0995','\u09EC. \u09B8\u099A\u09C7\u09A4\u09A8\u09AD\u09BE\u09AC\u09C7 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09AA\u09CD\u09B0\u09AC\u09C7\u09B6!'],sci:'\u09B8\u09AC\u099A\u09C7\u09AF\u09BC\u09C7 \u09B6\u0995\u09CD\u09A4\u09BF\u09B6\u09BE\u09B2\u09C0 \u0995\u09BF\u09A8\u09CD\u09A4\u09C1 \u0995\u09A0\u09BF\u09A8\u09A4\u09AE \u0995\u09CC\u09B6\u09B2\u0964'},wbtb:{n:'WBTB \u2014 \u0998\u09C1\u09AE\u09C7 \u09AB\u09BF\u09B0\u09C7 \u0986\u09B8\u09BE',s:['\u09E7. \u09B8\u09CD\u09AC\u09BE\u09AD\u09BE\u09AC\u09BF\u0995 \u09B8\u09AE\u09AF\u09BC\u09C7 \u0998\u09C1\u09AE\u09BE\u09A8','\u09E8. \u09EB-\u09EC \u0998\u09A3\u09CD\u099F\u09BE \u09AA\u09B0\u09C7 \u0985\u09CD\u09AF\u09BE\u09B2\u09BE\u09B0\u09CD\u09AE','\u09E9. \u09E9\u09E6-\u09EC\u09E6 \u09AE\u09BF\u09A8\u09BF\u099F \u09B8\u099A\u09C7\u09A4\u09A8 \u09A5\u09BE\u0995\u09C1\u09A8','\u09EA. \u09B2\u09C1\u09B8\u09BF\u09A1 \u09A1\u09CD\u09B0\u09BF\u09AE\u09BF\u0982 \u09AA\u09A1\u09BC\u09C1\u09A8','\u09EB. \u0986\u09AC\u09BE\u09B0 \u0998\u09C1\u09AE\u09BE\u09A8 \u2014 REM \u09B8\u09AC\u09B6\u09C7\u09B7\u09C7 \u09A6\u09C0\u09B0\u09CD\u0998'],sci:'\u09EC\u09B7\u09CD\u09A0 \u0998\u09A3\u09CD\u099F\u09BE\u09AF\u09BC REM \u09B8\u09AC\u099A\u09C7\u09AF\u09BC\u09C7 \u09A6\u09C0\u09B0\u09CD\u0998\u0964'},fild:{n:'FILD \u2014 \u0986\u0999\u09CD\u0997\u09C1\u09B2 \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AA\u09CD\u09B0\u09AC\u09C7\u09B6',s:['\u09E7. WBTB \u098F\u09B0 \u09AA\u09B0 \u09B6\u09C1\u09AF\u09BC\u09C7 \u09AA\u09A1\u09BC\u09C1\u09A8','\u09E8. \u09A4\u09B0\u09CD\u099C\u09A8\u09C0 \u0993 \u09AE\u09A7\u09CD\u09AF\u09AE\u09BE \u09B8\u09BE\u09AE\u09BE\u09A8\u09CD\u09AF \u09A8\u09BE\u09A1\u09BC\u09BE\u09A8','\u09E9. \u0996\u09C1\u09AC \u09B9\u09BE\u09B2\u0995\u09BE\u09AD\u09BE\u09AC\u09C7','\u09EA. \u0998\u09C1\u09AE\u09BF\u09AF\u09BC\u09C7 \u09AA\u09A1\u09BC\u09B2\u09C7\u0993 \u09AC\u09A8\u09CD\u09A7 \u0995\u09B0\u09AC\u09C7\u09A8 \u09A8\u09BE','\u09EB. \u09B0\u09BF\u09AF\u09BC\u09C7\u09B2\u09BF\u099F\u09BF \u099A\u09C7\u0995 \u0995\u09B0\u09C1\u09A8!'],sci:'\u09AE\u09CB\u099F\u09B0 \u0995\u09B0\u09CD\u099F\u09C7\u0995\u09CD\u09B8 \u09B8\u0995\u09CD\u09B0\u09BF\u09AF\u09BC \u09B0\u09C7\u0996\u09C7 \u09B2\u09C1\u09B8\u09BF\u09A1 \u09B8\u09AE\u09CD\u09AD\u09AC\u0964'},deild:{n:'DEILD \u2014 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09A5\u09C7\u0995\u09C7 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7',s:['\u09E7. \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09AD\u09BE\u0999\u09B2\u09C7 \u09A8\u09A1\u09BC\u09BE\u099A\u09A1\u09BC\u09BE \u0995\u09B0\u09AC\u09C7\u09A8 \u09A8\u09BE','\u09E8. \u099A\u09CB\u0996 \u0996\u09C1\u09B2\u09AC\u09C7\u09A8 \u09A8\u09BE','\u09E9. \u09B6\u09C7\u09B7 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7\u09B0 \u09A6\u09C3\u09B6\u09CD\u09AF \u09AE\u09A8\u09C7 \u09B0\u09BE\u0996\u09C1\u09A8','\u09EA. \u09AC\u09BE\u09A6\u09BE\u09AE\u09C0 \u09A5\u09C7\u0995\u09C7 \u09B8\u09C7\u0987 \u09A6\u09C3\u09B6\u09CD\u09AF \u09AB\u09BF\u09B0\u09BE\u09A8','\u09EB. \u0986\u09AC\u09BE\u09B0 \u09B8\u09C7\u0987 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7 \u09AA\u09CD\u09B0\u09AC\u09C7\u09B6!'],sci:'30 \u09B8\u09C7\u0995\u09C7\u09A8\u09CD\u09A1\u09C7 DEILD \u09B6\u09C1\u09B0\u09C1 \u0995\u09B0\u09B2\u09C7 REM \u09AA\u09C1\u09A8\u09B0\u09BE\u09AF\u09BC \u09B8\u09AE\u09CD\u09AD\u09AC\u0964'},ssild:{n:'SSILD \u2014 \u0987\u09A8\u09CD\u09A6\u09CD\u09B0\u09BF\u09AF\u09BC \u099C\u09BE\u0997\u09CD\u09B0\u09A4',s:['\u09E7. \u099A\u09CB\u0996\u09C7\u09B0 \u0986\u09B2\u09CB-\u099B\u09BE\u09AF\u09BC\u09BE 15 \u09B8\u09C7\u0995\u09C7\u09A8\u09CD\u09A1','\u09E8. \u09B6\u09AC\u09CD\u09A6 \u09B6\u09C1\u09A8\u09C1\u09A8 15 \u09B8\u09C7\u0995\u09C7\u09A8\u09CD\u09A1','\u09E9. \u09B6\u09B0\u09C0\u09B0\u09C7 \u0985\u09A8\u09C1\u09AD\u09C2\u09A4\u09BF 15 \u09B8\u09C7\u0995\u09C7\u09A8\u09CD\u09A1','\u09EA. \u098F\u0987 \u099A\u0995\u09CD\u09B0 4-5 \u09AC\u09BE\u09B0','\u09EB. \u0998\u09C1\u09AE\u09BE\u09A8!'],sci:'\u09AE\u09BE\u09B2\u09CD\u099F\u09BF\u09B8\u09C7\u09A8\u09B8\u09B0\u09BF \u09B8\u099A\u09C7\u09A4\u09A8\u09A4\u09BE \u0998\u09C1\u09AE\u09C7\u0993 \u09B8\u0995\u09CD\u09B0\u09BF\u09AF\u09BC\u0964'}};
+function openTech(n){const t=TECHS[n];if(!t)return;const mttl=document.getElementById('mttl'),mbody=document.getElementById('mbody');if(mttl)mttl.textContent=t.n;if(mbody)mbody.innerHTML='<div style="margin-bottom:13px">'+t.s.map(s=>'<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--c1)">\u25B6</span><span style="font-size:.83rem;color:var(--ts);line-height:1.5">'+s+'</span></div>').join('')+'</div><div style="padding:11px;border-radius:9px;background:rgba(157,0,255,.07);border:1px solid rgba(157,0,255,.18);margin-bottom:13px"><div style="font-family:Orbitron,monospace;font-size:.6rem;color:var(--c2);margin-bottom:4px;letter-spacing:2px">NEUROSCIENCE</div><div style="font-size:.8rem;color:var(--ts);line-height:1.6">'+t.sci+'</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bp" onclick="gp(\'audio\');playP(\'theta\');cmo(\'techmo\')">\uD83C\uDFB5 Theta \u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2</button><button class="btn bg2" onclick="cmo(\'techmo\')">\u09AC\u09A8\u09CD\u09A7</button></div>';omo('techmo');}
+function saveInc(){const t=(document.getElementById('inctxt')||{}).value||'';if(!t.trim()){toast('\u26A0\uFE0F','\u0995\u09BF\u099B\u09C1 \u09B2\u09BF\u0996\u09C1\u09A8','');return;}localStorage.setItem('md_inc',JSON.stringify({t,d:new Date().toISOString()}));toast('\uD83D\uDCBE','\u09B8\u09C7\u09AD \u09B9\u09AF\u09BC\u09C7\u099B\u09C7','\u0998\u09C1\u09AE\u09BE\u09A8\u09CB\u09B0 \u0986\u0997\u09C7 \u09AA\u09A1\u09BC\u09C1\u09A8');}
+function playAff(){const t=(document.getElementById('inctxt')||{}).value||'\u0986\u09AE\u09BF \u0986\u099C \u09B0\u09BE\u09A4\u09C7 \u09B2\u09C1\u09B8\u09BF\u09A1 \u09B8\u09CD\u09AC\u09AA\u09CD\u09A8 \u09A6\u09C7\u0996\u09AC';if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(t);u.lang='bn-BD';u.rate=.8;speechSynthesis.speak(u);toast('\uD83C\uDFAD\uFE0F','\u0985\u09CD\u09AF\u09BE\u09AB\u09BE\u09B0\u09CD\u09AE\u09C7\u09B6\u09A8 \u099A\u09BE\u09B2\u09C1','');}else toast('\u26A0\uFE0F','\u09B8\u09BE\u09AA\u09CB\u09B0\u09CD\u099F \u09A8\u09C7\u0987','');}
+function omo(id){const el=document.getElementById(id);if(el)el.classList.add('show');}
+function cmo(id){const el=document.getElementById(id);if(el)el.classList.remove('show');}
+function reqN(){if(!('Notification' in window))return;Notification.requestPermission().then(p=>{if(p==='granted'){toast('\uD83D\uDD14','\u09A8\u09CB\u099F\u09BF\u09AB\u09BF\u0995\u09C7\u09B6\u09A8 \u099A\u09BE\u09B2\u09C1','');new Notification('\u2728 MyDream',{body:'\u09B2\u09C1\u09B8\u09BF\u09A1 \u09B8\u09BF\u09B8\u09CD\u099F\u09C5\u09AE \u09AA\u09CD\u09B0\u09B8\u09CD\u09A4\u09C1\u09A4!'});}});}
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen();}
+async function toggleWL(){if('wakeLock' in navigator){try{if(S.wl){await S.wl.release();S.wl=null;const b=document.getElementById('wlbtn');if(b)b.style.color='';toast('\uD83D\uDCF1','Wake Lock \u09AC\u09A8\u09CD\u09A7','');}else{S.wl=await navigator.wakeLock.request('screen');const b=document.getElementById('wlbtn');if(b)b.style.color='var(--c5)';toast('\uD83D\uDCF1','Wake Lock \u099A\u09BE\u09B2\u09C1','\u09B8\u09CD\u0995\u09CD\u09B0\u09BF\u09A8 \u09AC\u09A8\u09CD\u09A7 \u09B9\u09AC\u09C7 \u09A8\u09BE');}}catch(e){toast('\u26A0\uFE0F','\u09AC\u09CD\u09AF\u09B0\u09CD\u09A5','');}}}
+function clearAll(){if(!confirm('\u09B8\u09AC \u09AE\u09C1\u099B\u09AC\u09C7\u09A8?'))return;localStorage.clear();S.dreams=[];renderDL();updStats();toast('\uD83D\uDDD1\uFE0F','\u09AE\u09C1\u099B\u09C7 \u09AB\u09C7\u09B2\u09BE \u09B9\u09AF\u09BC\u09C7\u099B\u09C7','');}
+function addAlarm(){const t=prompt('\u09B8\u09AE\u09AF\u09BC (HH:MM):','06:00');if(!t||!/^\d{2}:\d{2}$/.test(t))return;const l=prompt('\u09A8\u09BE\u09AE:','\u0985\u09CD\u09AF\u09BE\u09B2\u09BE\u09B0\u09CD\u09AE');const el=document.getElementById('alarml');if(!el)return;const c=document.createElement('div');c.className='alarm-c';c.innerHTML='<div class="alarm-t">'+t+'</div><div><div style="font-size:.84rem;font-weight:600;color:var(--tp)">'+esc(l||'\u0985\u09CD\u09AF\u09BE\u09B2\u09BE\u09B0\u09CD\u09AE')+'</div><div style="font-size:.71rem;color:var(--tm)">\u09AA\u09CD\u09B0\u09A4\u09BF\u09A6\u09BF\u09A8</div></div><label class="tg" style="margin-left:auto"><input type="checkbox" checked><span class="sl"></span></label>';el.appendChild(c);toast('\u23F0',t+' \u09AF\u09CB\u0997 \u09B9\u09AF\u09BC\u09C7\u099B\u09C7','');}
+function toast(ico,ttl,msg){const c=document.getElementById('tc');if(!c)return;const t=document.createElement('div');t.className='toast';t.innerHTML='<div style="font-size:1rem">'+ico+'</div><div><div style="font-size:.78rem;font-weight:700;color:var(--tp)">'+ttl+'</div>'+(msg?'<div style="font-size:.72rem;color:var(--tm)">'+msg+'</div>':'')+'</div>';c.appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300);},3000);}
+function gp(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.ntab,.mt2').forEach(t=>t.classList.toggle('active',t.dataset.page===n));let pg=document.getElementById('page-'+n);if(!pg&&n==='portal')pg=document.getElementById('pp');if(pg)pg.classList.add('active');if(n==='portal')setTimeout(()=>{initP();},80);else if(n==='analytics')setTimeout(()=>{drawANC();drawHM();drawTC();updIns();},80);else if(n==='light')setTimeout(()=>initLC(),80);else if(n==='audio')setTimeout(()=>drawAV(),80);}
+const curEl=document.getElementById('cur'),curfEl=document.getElementById('curf');
+let mx=0,my=0,fx=0,fy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(curEl){curEl.style.left=mx+'px';curEl.style.top=my+'px';}});
+(function ac(){fx+=(mx-fx)*.13;fy+=(my-fy)*.13;if(curfEl){curfEl.style.left=fx+'px';curfEl.style.top=fy+'px';}requestAnimationFrame(ac);})();
+function buildSPV(){const el=document.getElementById('spviz');if(!el)return;const ph=[{t:'light',h:15},{t:'deep',h:38},{t:'deep',h:62},{t:'light',h:28},{t:'rem',h:18},{t:'light',h:16},{t:'deep',h:24},{t:'rem',h:32},{t:'light',h:20},{t:'rem',h:42},{t:'awake',h:10},{t:'rem',h:52},{t:'light',h:26},{t:'rem',h:68},{t:'awake',h:8},{t:'rem',h:78}];el.innerHTML=ph.map(p=>'<div class="spb '+p.t+'" style="height:'+p.h+'px"></div>').join('');}
+function updG(){const h=new Date().getHours(),el=document.getElementById('greet');if(!el)return;if(h<5)el.textContent='\u09B6\u09C1\u09AD \u09B0\u09BE\u09A4! \uD83C\uDF19';else if(h<12)el.textContent='\u09B6\u09C1\u09AD \u09B8\u0995\u09BE\u09B2! \u2600\uFE0F';else if(h<17)el.textContent='\u09B6\u09C1\u09AD \u09A6\u09C1\u09AA\u09C1\u09B0! \uD83C\uDF24';else if(h<20)el.textContent='\u09B6\u09C1\u09AD \u09AC\u09BF\u0995\u09C7\u09B2! \uD83C\uDF06';else el.textContent='\u09B6\u09C1\u09AD \u09B8\u09A8\u09CD\u09A7\u09CD\u09AF\u09BE! \uD83C\uDF19';}
+const LST=['\u0985\u09A1\u09BF\u0993 \u0987\u099E\u09CD\u099C\u09BF\u09A8 \u09B0\u09C7\u09A1\u09BF...','\u09A8\u09BF\u0989\u09B0\u09BE\u09B2 \u09AA\u09BE\u09A5\u0993\u09AF\u09BC\u09C7 \u09B2\u09CB\u09A1...','\u09AC\u09BE\u0987\u09A8\u09BE\u09B0\u09BE\u09B2 \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE \u09B0\u09C7\u09A1\u09BF...','\u09A1\u09CD\u09B0\u09BF\u09AE \u09AA\u09CB\u09B0\u09CD\u099F\u09BE\u09B2 \u09A4\u09C8\u09B0\u09BF...','\u09B8\u09CD\u09AC\u09BE\u0997\u09A4\u09AE! \u2728'];
+let lsi=0;
+const lstIv=setInterval(()=>{if(lsi>=LST.length){clearInterval(lstIv);return;}const el=document.getElementById('lsst');if(el)el.textContent=LST[lsi++];},440);
+const lsfill=document.getElementById('lsfill');if(lsfill)lsfill.style.width='100%';
+setTimeout(()=>{const ls=document.getElementById('ls');if(ls)ls.classList.add('hide');loadD();buildSPV();updG();drawAV();setInterval(updG,60000);toast('\u2728','MyDream \u09B8\u09CD\u09AC\u09BE\u0997\u09A4\u09AE!','\u09B2\u09C1\u09B8\u09BF\u09A1 \u09B8\u09BF\u09B8\u09CD\u099F\u09C5\u09AE \u09AA\u09CD\u09B0\u09B8\u09CD\u09A4\u09C1\u09A4');},2500);
+window.addEventListener('resize',()=>{if(pCvs&&pCvs.parentElement){pCvs.width=pCvs.parentElement.offsetWidth;pCvs.height=pCvs.parentElement.offsetHeight;}if(lCvs)lCvs.width=lCvs.offsetWidth;});
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
+</script>
+</body>
+</html>
